@@ -46,32 +46,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        // Fetch or create profile
-        const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
-        if (userDoc.exists()) {
-          const profileData = userDoc.data() as UserProfile;
-          // Auto-upgrade this specific user to admin if they are not already
-          if (firebaseUser.email === "samarsultan838@gmail.com" && profileData.role !== "admin") {
-            const updatedProfile = { ...profileData, role: "admin" as const };
-            await setDoc(doc(db, "users", firebaseUser.uid), updatedProfile);
-            setProfile(updatedProfile);
+        try {
+          // Fetch or create profile
+          const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+          if (userDoc.exists()) {
+            const profileData = userDoc.data() as UserProfile;
+            // Auto-upgrade this specific user to admin if they are not already
+            if (firebaseUser.email === "samarsultan838@gmail.com" && profileData.role !== "admin") {
+              const updatedProfile = { ...profileData, role: "admin" as const };
+              await setDoc(doc(db, "users", firebaseUser.uid), updatedProfile);
+              setProfile(updatedProfile);
+            } else {
+              setProfile(profileData);
+            }
           } else {
-            setProfile(profileData);
+            // Check if this should be an admin
+            const isAdmin = firebaseUser.email === "samarsultan838@gmail.com";
+            
+            const newProfile: UserProfile = {
+              uid: firebaseUser.uid,
+              name: firebaseUser.displayName || "Unknown User",
+              email: firebaseUser.email || "",
+              role: isAdmin ? "admin" : "user",
+              profileImage: firebaseUser.photoURL || "",
+              createdAt: new Date().toISOString(),
+            };
+            await setDoc(doc(db, "users", firebaseUser.uid), newProfile);
+            setProfile(newProfile);
           }
-        } else {
-          // Check if this should be an admin
-          const isAdmin = firebaseUser.email === "samarsultan838@gmail.com";
-          
-          const newProfile: UserProfile = {
-            uid: firebaseUser.uid,
-            name: firebaseUser.displayName || "Unknown User",
-            email: firebaseUser.email || "",
-            role: isAdmin ? "admin" : "user",
-            profileImage: firebaseUser.photoURL || "",
-            createdAt: new Date().toISOString(),
-          };
-          await setDoc(doc(db, "users", firebaseUser.uid), newProfile);
-          setProfile(newProfile);
+        } catch (error) {
+          console.error("Profile load error:", error);
+          // If we fail to load the profile, we still have the user object
+          // but some features might be hidden.
         }
       } else {
         setProfile(null);
@@ -83,7 +89,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signInWithGoogle = async () => {
-    await signInWithPopup(auth, googleProvider);
+    try {
+      googleProvider.setCustomParameters({ prompt: 'select_account' });
+      await signInWithPopup(auth, googleProvider);
+    } catch (error: any) {
+      console.error("Google Sign-In Error:", error);
+      if (error.code === 'auth/popup-blocked') {
+        throw new Error("Login popup was blocked by your browser. Please allow popups or try opening the app in a new tab.");
+      }
+      throw error;
+    }
   };
 
   const signInWithEmail = async (email: string, pass: string) => {

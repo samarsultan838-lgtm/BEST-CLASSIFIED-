@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { getAds } from "../lib/firestoreService";
+import SEO from "@/src/components/SEO";
 
 const CATEGORIES = [
   { name: "Vehicles", icon: Car, color: "bg-blue-500", slug: "vehicles" },
@@ -43,6 +44,12 @@ export default function HomePage() {
   }, []);
   return (
     <div className="flex flex-col">
+      <SEO 
+        title="Trazot | The Elite Marketplace for Premium Finds"
+        description="Join thousands of users in Trazot community. Verified sellers, secure transactions, and elite marketplace discovery."
+        keywords="pakistan marketplace, premium classifieds, buy sell verified, trazot elite"
+        url="https://trazot.com"
+      />
       {/* Hero Section */}
       <section className="relative bg-slate-950 overflow-hidden pt-24 pb-40">
         <div className="absolute inset-0 opacity-20">

@@ -4,7 +4,8 @@ import {
   updateAdPriority, 
   toggleFeaturedAd, 
   approveAd, 
-  rejectAd 
+  rejectAd,
+  setAdRanking 
 } from "../lib/firestoreService";
 import { useAuth } from "../context/AuthContext";
 import { 
@@ -87,6 +88,16 @@ export default function AdminAds() {
       fetchAds();
     } catch (error) {
       toast.error("Operation failed");
+    }
+  };
+
+  const handleRankingChange = async (adId: string, weight: number) => {
+    try {
+      await setAdRanking(adId, weight);
+      toast.success(`Ranking Weight updated to ${weight}`);
+      fetchAds();
+    } catch (error) {
+      toast.error("Ranking update failed");
     }
   };
 
@@ -191,6 +202,19 @@ export default function AdminAds() {
                                    <XCircle className="w-5 h-5" /> Deny Authorization
                                 </DropdownMenuItem>
                                 
+                                <DropdownMenuSeparator className="my-2 bg-slate-50" />
+
+                                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 px-2">Positioning Protocol</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => handleRankingChange(ad.id, 1000)} className="flex items-center gap-3 p-4 rounded-xl cursor-pointer hover:bg-emerald-50 text-emerald-600 font-bold">
+                                   <ArrowUpDown className="w-5 h-5" /> Push to TOP (Level 1000)
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleRankingChange(ad.id, 500)} className="flex items-center gap-3 p-4 rounded-xl cursor-pointer hover:bg-blue-50 text-blue-600 font-bold">
+                                   <ArrowUpDown className="w-5 h-5" /> Middle Orbit (Level 500)
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleRankingChange(ad.id, 0)} className="flex items-center gap-3 p-4 rounded-xl cursor-pointer hover:bg-slate-50 text-slate-400 font-bold">
+                                   <ArrowUpDown className="w-5 h-5" /> Standard Floor (Level 0)
+                                </DropdownMenuItem>
+
                                 <DropdownMenuSeparator className="my-2 bg-slate-50" />
                                 
                                 <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 px-2">Priority Protocols</DropdownMenuLabel>

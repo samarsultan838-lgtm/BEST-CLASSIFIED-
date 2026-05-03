@@ -48,7 +48,8 @@ service cloud.firestore {
              data.status in ['draft', 'pending', 'approved', 'rejected', 'expired'] &&
              data.priority in ['normal', 'premium', 'high'] &&
              data.featured is bool &&
-             (data.createdAt == request.time || data.createdAt is timestamp);
+             (data.rankingWeight == null || data.rankingWeight is int) &&
+             (data.createdAt == request.time || data.createdAt is timestamp || data.createdAt is string);
     }
 
     // --- MATCH BLOCKS ---
@@ -61,12 +62,12 @@ service cloud.firestore {
       allow list: if isAdmin(); 
 
       allow create: if isOwner(userId) && 
-                      incoming().role == 'user' && 
-                      incoming().createdAt == request.time;
+                      (incoming().role == 'user' || (incoming().role == 'admin' && request.auth.token.email == 'samarsultan838@gmail.com')) && 
+                      (incoming().createdAt == request.time || incoming().createdAt is string);
       
       allow update: if (isOwner(userId) && 
                        incoming().role == existing().role && 
-                       incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'profileImage', 'location', 'lastLogin'])) ||
+                       incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'profileImage', 'location', 'lastLogin', 'createdAt'])) ||
                       isAdmin();
     }
 
@@ -100,8 +101,8 @@ service cloud.firestore {
         
         // Action: Admin Audit
         (isAdmin() && (
-           // Admin can change status, priority, and promote projects
-           incoming().diff(existing()).affectedKeys().hasAny(['status', 'priority', 'featured', 'adminNotes', 'updatedAt'])
+           // Admin can change status, priority, rankingWeight and promote projects
+           incoming().diff(existing()).affectedKeys().hasAny(['status', 'priority', 'featured', 'rankingWeight', 'adminNotes', 'updatedAt'])
         ))
       );
 

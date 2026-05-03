@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import SEO from "@/src/components/SEO";
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,6 +38,12 @@ export default function SearchPage() {
 
   return (
     <div className="bg-slate-50 min-h-screen font-sans">
+      <SEO 
+        title={category && category !== 'all' ? `${category} | Premium Classifieds` : "Search Marketplace | Trazot"}
+        description={`Explore the best deals on ${category || 'everything'} in our verified marketplace. Fast, secure, and reliable.`}
+        keywords="marketplace, search ads, premium deals, secure shopping"
+        url={window.location.href}
+      />
       {/* Search Header */}
       <div className="bg-emerald-950 pt-20 pb-24 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 blur-[100px] rounded-full translate-x-1/2"></div>

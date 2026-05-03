@@ -77,8 +77,8 @@ export const getAds = async (filters: { category?: string; status?: string; limi
     let q;
     
     if (filters.prioritized) {
-      // Prioritize premium/featured then by date
-      q = query(collection(db, path), orderBy("priority", "desc"), orderBy("createdAt", "desc"));
+      // Prioritize rankingWeight, then priority, then by date
+      q = query(collection(db, path), orderBy("rankingWeight", "desc"), orderBy("priority", "desc"), orderBy("createdAt", "desc"));
     } else {
       q = query(collection(db, path), orderBy("createdAt", "desc"));
     }
@@ -185,6 +185,33 @@ export const getPendingAds = async () => {
     return snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
   } catch (error) {
     handleFirestoreError(error, OperationType.LIST, path);
+  }
+};
+
+export const setAdRanking = async (adId: string, rankingWeight: number) => {
+  const path = `ads/${adId}`;
+  try {
+    const docRef = doc(db, "ads", adId);
+    await updateDoc(docRef, {
+      rankingWeight,
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.UPDATE, path);
+  }
+};
+
+export const updateAdStatus = async (adId: string, status: string, notes?: string) => {
+  const path = `ads/${adId}`;
+  try {
+    const docRef = doc(db, "ads", adId);
+    await updateDoc(docRef, {
+      status,
+      adminNotes: notes || "",
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.UPDATE, path);
   }
 };
 

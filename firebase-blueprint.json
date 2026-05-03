@@ -51,6 +51,7 @@
         },
         "status": { "type": "string", "enum": ["draft", "pending", "approved", "rejected", "expired", "flagged"] },
         "priority": { "type": "string", "enum": ["normal", "premium", "high"] },
+        "rankingWeight": { "type": "integer", "description": "Admin-defined weight for sorting: higher means top of list. Default 0." },
         "featured": { "type": "boolean" },
         "adminNotes": { "type": "string" },
         "views": { "type": "integer" },
