@@ -24,69 +24,85 @@ function DashboardHome() {
   const { profile } = useAuth();
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="flex-grow space-y-8">
-          <Card className="border-none shadow-xl rounded-[2rem] overflow-hidden bg-slate-900 text-white">
-            <CardContent className="p-10 flex flex-col md:flex-row items-center gap-8">
-               <Avatar className="w-24 h-24 border-4 border-slate-800">
-                  <AvatarImage src={profile?.profileImage} />
-                  <AvatarFallback className="text-3xl font-black bg-orange-500">{profile?.name.charAt(0)}</AvatarFallback>
-               </Avatar>
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <div className="flex flex-col md:flex-row gap-10">
+        <div className="flex-grow space-y-10">
+          <Card className="border-none shadow-[0_40px_80px_rgba(0,0,0,0.1)] rounded-[3rem] overflow-hidden bg-emerald-950 text-white relative">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 blur-[100px] rounded-full translate-x-1/4"></div>
+            <CardContent className="p-12 flex flex-col md:flex-row items-center gap-12 relative z-10">
+               <div className="relative">
+                 <Avatar className="w-32 h-32 border-4 border-emerald-900 shadow-2xl">
+                    <AvatarImage src={profile?.profileImage} />
+                    <AvatarFallback className="text-4xl font-black bg-emerald-500 text-emerald-950">{profile?.name.charAt(0)}</AvatarFallback>
+                 </Avatar>
+                 <div className="absolute -bottom-2 -right-2 bg-emerald-500 p-2.5 rounded-2xl shadow-xl">
+                   <ShieldCheck className="w-6 h-6 text-emerald-950" />
+                 </div>
+               </div>
                <div className="text-center md:text-left flex-grow">
-                  <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-                     <h2 className="text-3xl font-black">{profile?.name}</h2>
-                     <Badge className="bg-orange-500 text-[10px] font-black">{profile?.role.toUpperCase()}</Badge>
+                  <div className="flex flex-col md:flex-row items-center md:items-start gap-4 mb-4">
+                     <h2 className="text-4xl font-black tracking-tighter uppercase leading-none">{profile?.name}</h2>
+                     <Badge className="bg-emerald-500 text-emerald-950 text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1 rounded-full">{profile?.role}</Badge>
                   </div>
-                  <p className="text-slate-400 font-medium mb-6">{profile?.email}</p>
-                  <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                     <div className="flex items-center gap-2 bg-slate-800 px-4 py-2 rounded-xl text-sm font-bold">
-                        <MapPin className="w-4 h-4 text-orange-500" /> {profile?.location?.name || "Location not set"}
+                  <p className="text-emerald-400 font-bold mb-8 uppercase tracking-widest text-xs opacity-70">{profile?.email}</p>
+                  <div className="flex flex-wrap justify-center md:justify-start gap-6">
+                     <div className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-emerald-200/60">
+                        <MapPin className="w-4 h-4 text-emerald-500" /> {profile?.location?.name || "Global Resident"}
                      </div>
-                     <div className="flex items-center gap-2 bg-slate-800 px-4 py-2 rounded-xl text-sm font-bold">
-                        <Clock className="w-4 h-4 text-orange-500" /> Joined {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : 'Recently'}
+                     <div className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-emerald-200/60">
+                        <Clock className="w-4 h-4 text-emerald-500" /> Since {profile?.createdAt ? new Date(profile.createdAt).getFullYear() : '2025'}
                      </div>
                   </div>
                </div>
                <Link to="/post-ad" className="w-full md:w-auto">
-                 <Button className="w-full md:w-auto bg-orange-500 hover:bg-orange-600 font-black h-14 px-8 rounded-2xl shadow-lg shadow-orange-950">
-                    <PlusCircle className="mr-2 h-5 w-5" /> Sell Something
+                 <Button className="w-full md:w-auto bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black h-20 px-12 rounded-3xl shadow-[0_20px_40px_rgba(16,185,129,0.3)] text-xl transition-all hover:scale-105 uppercase tracking-tighter">
+                    <PlusCircle className="mr-3 h-6 w-6" /> Sell Item
                  </Button>
                </Link>
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-             <Card className="rounded-[2rem] border-none shadow-lg">
-                <CardHeader>
-                   <CardTitle className="flex items-center gap-2">
-                      <Tag className="w-5 h-5 text-orange-500" /> My Active Ads
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+             <Card className="rounded-[3rem] border-none shadow-2xl bg-white overflow-hidden group">
+                <CardHeader className="p-10 pb-0">
+                   <CardTitle className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-xl font-black uppercase tracking-tighter">
+                        <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center">
+                          <Tag className="w-6 h-6 text-emerald-500" />
+                        </div>
+                        Inventory
+                      </div>
+                      <Badge className="bg-slate-100 text-slate-400 border-none font-black px-4 py-1 rounded-lg">LIVE: 0</Badge>
                    </CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
-                   <div className="p-8 text-center text-slate-400">
-                      <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                         <Tag className="w-8 h-8 text-slate-200" />
-                      </div>
-                      <p className="text-sm font-medium">You don't have any live ads yet.</p>
-                      <Button variant="link" className="text-orange-500 font-bold mt-2">Start selling now</Button>
+                <CardContent className="p-10">
+                   <div className="text-center py-10">
+                      <p className="text-slate-400 font-bold text-lg mb-8 uppercase tracking-widest opacity-60">No active listings</p>
+                      <Button className="bg-slate-50 text-emerald-600 hover:bg-emerald-50 font-black w-full h-16 rounded-2xl transition-all shadow-inner">
+                        Create Your First Ad <span>→</span>
+                      </Button>
                    </div>
                 </CardContent>
              </Card>
 
-             <Card className="rounded-[2rem] border-none shadow-lg">
-                <CardHeader>
-                   <CardTitle className="flex items-center gap-2">
-                      <MessageSquare className="w-5 h-5 text-orange-500" /> Recent Messages
+             <Card className="rounded-[3rem] border-none shadow-2xl bg-white overflow-hidden group">
+                <CardHeader className="p-10 pb-0">
+                   <CardTitle className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-xl font-black uppercase tracking-tighter">
+                        <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center">
+                          <MessageSquare className="w-6 h-6 text-blue-500" />
+                        </div>
+                        Network
+                      </div>
+                      <Badge className="bg-blue-50 text-blue-400 border-none font-black px-4 py-1 rounded-lg">NEW: 0</Badge>
                    </CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
-                   <div className="p-8 text-center text-slate-400">
-                      <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                         <MessageSquare className="w-8 h-8 text-slate-200" />
-                      </div>
-                      <p className="text-sm font-medium">No messages yet.</p>
-                      <Button variant="link" className="text-orange-500 font-bold mt-2">Check notifications</Button>
+                <CardContent className="p-10">
+                   <div className="text-center py-10">
+                      <p className="text-slate-400 font-bold text-lg mb-8 uppercase tracking-widest opacity-60">Inbox is empty</p>
+                      <Button className="bg-slate-50 text-blue-600 hover:bg-blue-50 font-black w-full h-16 rounded-2xl transition-all shadow-inner">
+                        Inbox Console <span>→</span>
+                      </Button>
                    </div>
                 </CardContent>
              </Card>
@@ -109,25 +125,25 @@ export default function DashboardPage() {
               <div className="p-8 border-b border-slate-50">
                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Account Menu</h3>
               </div>
-              <nav className="p-4 space-y-1">
-                 <Link to="/dashboard" className="flex items-center gap-3 w-full p-4 rounded-2xl bg-orange-50 text-orange-600 font-black">
+              <nav className="p-4 space-y-2">
+                 <Link to="/dashboard" className="flex items-center gap-4 w-full p-5 rounded-2xl bg-emerald-50 text-emerald-600 font-black uppercase tracking-tighter transition-all hover:scale-[1.02]">
                     <LayoutDashboard className="w-5 h-5" /> Overview
                  </Link>
-                 <Link to="/dashboard/my-ads" className="flex items-center gap-3 w-full p-4 rounded-2xl text-slate-600 hover:bg-slate-50 font-bold transition-colors">
-                    <Tag className="w-5 h-5" /> My Ads
+                 <Link to="/dashboard/my-ads" className="flex items-center gap-4 w-full p-5 rounded-2xl text-slate-500 hover:bg-slate-50 font-black uppercase tracking-tighter transition-all hover:translate-x-1">
+                    <Tag className="w-5 h-5 text-emerald-500/50" /> My Listings
                  </Link>
-                 <Link to="/dashboard/favorites" className="flex items-center gap-3 w-full p-4 rounded-2xl text-slate-600 hover:bg-slate-50 font-bold transition-colors">
-                    <Heart className="w-5 h-5" /> Favorites
+                 <Link to="/dashboard/favorites" className="flex items-center gap-4 w-full p-5 rounded-2xl text-slate-500 hover:bg-slate-50 font-black uppercase tracking-tighter transition-all hover:translate-x-1">
+                    <Heart className="w-5 h-5 text-emerald-500/50" /> Watchlist
                  </Link>
-                 <Link to="/dashboard/messages" className="flex items-center gap-3 w-full p-4 rounded-2xl text-slate-600 hover:bg-slate-50 font-bold transition-colors">
-                    <MessageSquare className="w-5 h-5" /> Messages
+                 <Link to="/dashboard/messages" className="flex items-center gap-4 w-full p-5 rounded-2xl text-slate-500 hover:bg-slate-50 font-black uppercase tracking-tighter transition-all hover:translate-x-1">
+                    <MessageSquare className="w-5 h-5 text-emerald-500/50" /> Messenger
                  </Link>
-                 <Link to="/dashboard/settings" className="flex items-center gap-3 w-full p-4 rounded-2xl text-slate-600 hover:bg-slate-50 font-bold transition-colors">
-                    <Settings className="w-5 h-5" /> Settings
+                 <Link to="/dashboard/settings" className="flex items-center gap-4 w-full p-5 rounded-2xl text-slate-500 hover:bg-slate-50 font-black uppercase tracking-tighter transition-all hover:translate-x-1">
+                    <Settings className="w-5 h-5 text-emerald-500/50" /> Preferences
                  </Link>
                  <div className="pt-8 px-4"><div className="border-t border-slate-50"></div></div>
-                 <button onClick={() => signOut()} className="flex items-center gap-3 w-full p-4 rounded-2xl text-red-500 hover:bg-red-50 font-bold transition-colors">
-                    <LogOut className="w-5 h-5" /> Log out
+                 <button onClick={() => signOut()} className="flex items-center gap-4 w-full p-5 rounded-2xl text-red-500 hover:bg-red-50 font-black uppercase tracking-tighter transition-all">
+                    <LogOut className="w-5 h-5" /> Terminate Session
                  </button>
               </nav>
            </div>
