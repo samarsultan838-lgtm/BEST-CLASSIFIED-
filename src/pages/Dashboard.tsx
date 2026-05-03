@@ -29,34 +29,34 @@ function DashboardHome() {
         <div className="flex-grow space-y-10">
           <Card className="border-none shadow-[0_40px_80px_rgba(0,0,0,0.1)] rounded-[3rem] overflow-hidden bg-emerald-950 text-white relative">
             <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 blur-[100px] rounded-full translate-x-1/4"></div>
-            <CardContent className="p-12 flex flex-col md:flex-row items-center gap-12 relative z-10">
+            <CardContent className="p-6 md:p-12 flex flex-col md:flex-row items-center gap-10 md:gap-12 relative z-10">
                <div className="relative">
-                 <Avatar className="w-32 h-32 border-4 border-emerald-900 shadow-2xl">
+                 <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-emerald-900 shadow-2xl">
                     <AvatarImage src={profile?.profileImage} />
-                    <AvatarFallback className="text-4xl font-black bg-emerald-500 text-emerald-950">{profile?.name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="text-3xl md:text-4xl font-black bg-emerald-500 text-emerald-950">{profile?.name.charAt(0)}</AvatarFallback>
                  </Avatar>
-                 <div className="absolute -bottom-2 -right-2 bg-emerald-500 p-2.5 rounded-2xl shadow-xl">
-                   <ShieldCheck className="w-6 h-6 text-emerald-950" />
+                 <div className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 bg-emerald-500 p-2 md:p-2.5 rounded-xl md:rounded-2xl shadow-xl">
+                   <ShieldCheck className="w-5 h-5 md:w-6 md:h-6 text-emerald-950" />
                  </div>
                </div>
                <div className="text-center md:text-left flex-grow">
-                  <div className="flex flex-col md:flex-row items-center md:items-start gap-4 mb-4">
-                     <h2 className="text-4xl font-black tracking-tighter uppercase leading-none">{profile?.name}</h2>
-                     <Badge className="bg-emerald-500 text-emerald-950 text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1 rounded-full">{profile?.role}</Badge>
+                  <div className="flex flex-col md:flex-row items-center md:items-start gap-3 md:gap-4 mb-4">
+                     <h2 className="text-2xl md:text-4xl font-black tracking-tighter uppercase leading-none">{profile?.name}</h2>
+                     <Badge className="bg-emerald-50 text-emerald-600 md:bg-emerald-500 md:text-emerald-950 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] px-3 md:px-4 py-1 rounded-full">{profile?.role}</Badge>
                   </div>
-                  <p className="text-emerald-400 font-bold mb-8 uppercase tracking-widest text-xs opacity-70">{profile?.email}</p>
-                  <div className="flex flex-wrap justify-center md:justify-start gap-6">
-                     <div className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-emerald-200/60">
-                        <MapPin className="w-4 h-4 text-emerald-500" /> {profile?.location?.name || "Global Resident"}
+                  <p className="text-emerald-400 font-bold mb-6 md:mb-8 uppercase tracking-widest text-[10px] md:text-xs opacity-70">{profile?.email}</p>
+                  <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6">
+                     <div className="flex items-center gap-2 md:gap-3 text-xs md:text-sm font-black uppercase tracking-widest text-emerald-200/60">
+                        <MapPin className="w-3 h-3 md:w-4 md:h-4 text-emerald-500" /> {profile?.location?.name || "Global Resident"}
                      </div>
-                     <div className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-emerald-200/60">
-                        <Clock className="w-4 h-4 text-emerald-500" /> Since {profile?.createdAt ? new Date(profile.createdAt).getFullYear() : '2025'}
+                     <div className="flex items-center gap-2 md:gap-3 text-xs md:text-sm font-black uppercase tracking-widest text-emerald-200/60">
+                        <Clock className="w-3 h-3 md:w-4 md:h-4 text-emerald-500" /> Since {profile?.createdAt ? new Date(profile.createdAt).getFullYear() : '2025'}
                      </div>
                   </div>
                </div>
                <Link to="/post-ad" className="w-full md:w-auto">
-                 <Button className="w-full md:w-auto bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black h-20 px-12 rounded-3xl shadow-[0_20px_40px_rgba(16,185,129,0.3)] text-xl transition-all hover:scale-105 uppercase tracking-tighter">
-                    <PlusCircle className="mr-3 h-6 w-6" /> Sell Item
+                 <Button className="w-full md:w-auto bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black h-16 md:h-20 px-8 md:px-12 rounded-2xl md:rounded-3xl shadow-xl text-lg md:text-xl transition-all hover:scale-105 uppercase tracking-tighter">
+                    <PlusCircle className="mr-2 h-5 w-5 md:h-6 md:w-6" /> Sell Item
                  </Button>
                </Link>
             </CardContent>

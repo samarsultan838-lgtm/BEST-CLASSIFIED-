@@ -55,14 +55,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </a>
             </div>
 
+            {/* Post Ad Button - Always visible, but handled by PrivateRoute */}
+            <Link to="/post-ad" className="hidden sm:flex mr-2">
+              <Button variant="default" className="bg-emerald-500 hover:bg-emerald-600 text-emerald-950 font-black rounded-xl">
+                <PlusCircle className="mr-2 h-4 w-4" /> Post Ad
+              </Button>
+            </Link>
+
             {profile ? (
               <div className="flex items-center gap-4">
-                <Link to="/post-ad" className="hidden sm:flex">
-                  <Button variant="default" className="bg-emerald-500 hover:bg-emerald-600 text-emerald-950 font-black rounded-xl">
-                    <PlusCircle className="mr-2 h-4 w-4" /> Post Ad
-                  </Button>
-                </Link>
-
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={
@@ -137,9 +138,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link to="/news" className="text-3xl font-black uppercase tracking-tighter hover:text-emerald-500 transition-colors">Intelligence</Link>
                   <Link to="/about" className="text-3xl font-black uppercase tracking-tighter hover:text-emerald-500 transition-colors">History</Link>
                   <Link to="/contact" className="text-3xl font-black uppercase tracking-tighter hover:text-emerald-500 transition-colors">Support</Link>
-                  {profile && (
-                    <Link to="/post-ad" className="text-4xl font-black text-emerald-500 tracking-tighter uppercase leading-none">Execute Listing</Link>
-                  )}
+                  <Link to="/post-ad" className="text-4xl font-black text-emerald-500 tracking-tighter uppercase leading-none">Execute Listing</Link>
+                  
                   <div className="pt-12 border-t border-slate-100 flex flex-col gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                     <div className="flex items-center gap-4"><div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-emerald-500"><Phone className="w-4 h-4" /></div> +923001887808</div>
                     <div className="flex items-center gap-4"><div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-emerald-500"><Mail className="w-4 h-4" /></div> info@trazot.com</div>

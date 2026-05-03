@@ -264,18 +264,18 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 bg-emerald-500 relative overflow-hidden mx-4 lg:mx-10 rounded-[3rem] mb-10">
+      <section className="py-20 md:py-32 bg-emerald-500 relative overflow-hidden mx-4 lg:mx-10 rounded-[2rem] md:rounded-[3rem] mb-10">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/20 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-950/20 rounded-full blur-3xl"></div>
         
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <h2 className="text-5xl md:text-7xl font-black text-white mb-10 tracking-tighter leading-[0.85] uppercase">
-            Got something to sell?<br />Join Trazot today and find your buyer!
+        <div className="container mx-auto px-6 text-center relative z-10">
+          <h2 className="text-3xl md:text-7xl font-black text-white mb-8 md:mb-10 tracking-tighter leading-none uppercase">
+            Got something to sell?<br className="hidden md:block" /> Join Trazot today!
           </h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <Link to="/post-ad">
-              <Button size="lg" className="bg-emerald-950 text-white hover:bg-emerald-900 font-black px-16 py-10 text-2xl rounded-[2rem] shadow-2xl transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter">
+            <Link to="/post-ad" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full bg-emerald-950 text-white hover:bg-emerald-900 font-black px-8 md:px-16 py-8 md:py-10 text-xl md:text-2xl rounded-2xl md:rounded-[2rem] shadow-2xl transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter">
                 POST AN AD FREE
               </Button>
             </Link>
