@@ -3,7 +3,10 @@ import {
   onAuthStateChanged, 
   User as FirebaseUser, 
   signInWithPopup, 
-  signOut as firebaseSignOut 
+  signOut as firebaseSignOut,
+  signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
+  createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword,
+  updateProfile
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db, googleProvider } from "../lib/firebase";
@@ -27,6 +30,8 @@ interface AuthContextType {
   profile: UserProfile | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInWithEmail: (email: string, pass: string) => Promise<void>;
+  signUpWithEmail: (email: string, pass: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -44,13 +49,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Fetch or create profile
         const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
         if (userDoc.exists()) {
-          setProfile(userDoc.data() as UserProfile);
+          const profileData = userDoc.data() as UserProfile;
+          // Auto-upgrade this specific user to admin if they are not already
+          if (firebaseUser.email === "samarsultan838@gmail.com" && profileData.role !== "admin") {
+            const updatedProfile = { ...profileData, role: "admin" as const };
+            await setDoc(doc(db, "users", firebaseUser.uid), updatedProfile);
+            setProfile(updatedProfile);
+          } else {
+            setProfile(profileData);
+          }
         } else {
+          // Check if this should be an admin
+          const isAdmin = firebaseUser.email === "samarsultan838@gmail.com";
+          
           const newProfile: UserProfile = {
             uid: firebaseUser.uid,
             name: firebaseUser.displayName || "Unknown User",
             email: firebaseUser.email || "",
-            role: "user",
+            role: isAdmin ? "admin" : "user",
             profileImage: firebaseUser.photoURL || "",
             createdAt: new Date().toISOString(),
           };
@@ -70,12 +86,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signInWithPopup(auth, googleProvider);
   };
 
+  const signInWithEmail = async (email: string, pass: string) => {
+    await firebaseSignInWithEmailAndPassword(auth, email, pass);
+  };
+
+  const signUpWithEmail = async (email: string, pass: string, name: string) => {
+    const userCredential = await firebaseCreateUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(userCredential.user, { displayName: name });
+  };
+
   const signOut = async () => {
     await firebaseSignOut(auth);
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, signInWithEmail, signUpWithEmail, signOut }}>
       {children}
     </AuthContext.Provider>
   );

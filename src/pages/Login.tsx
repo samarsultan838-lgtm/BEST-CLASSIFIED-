@@ -10,8 +10,11 @@ import { useAuth } from "@/src/context/AuthContext";
 import { toast } from "sonner";
 
 export default function LoginPage() {
-  const { signInWithGoogle } = useAuth();
+  const { signInWithGoogle, signInWithEmail } = useAuth();
   const navigate = useNavigate();
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
   const handleGoogleLogin = async () => {
     try {
@@ -21,6 +24,26 @@ export default function LoginPage() {
     } catch (error) {
       toast.error("Failed to login with Google");
       console.error(error);
+    }
+  };
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      toast.error("Please provide both email and passkey");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await signInWithEmail(email, password);
+      toast.success("Welcome back, Merchant!");
+      navigate("/dashboard");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to authenticate");
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,12 +72,19 @@ export default function LoginPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-10 px-16 pb-16">
-            <div className="space-y-8">
+            <form onSubmit={handleEmailLogin} className="space-y-8">
               <div className="space-y-4">
                 <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Merchant Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
-                  <Input id="email" type="email" placeholder="name@domain.com" className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" />
+                   <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="name@domain.com" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" 
+                  />
                 </div>
               </div>
               <div className="space-y-4">
@@ -63,14 +93,24 @@ export default function LoginPage() {
                   <Link to="/forgot-password" title="Recover?" className="text-emerald-600 hover:underline">Recover?</Link>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
-                  <Input id="password" type="password" className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" />
+                   <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" 
+                  />
                 </div>
               </div>
-              <Button className="w-full bg-emerald-950 hover:bg-emerald-900 text-white font-black h-20 rounded-3xl transition-all hover:scale-[1.02] active:scale-[0.98] uppercase tracking-tighter text-lg shadow-2xl">
-                <LogIn className="mr-3 w-6 h-6" /> Authenticate
+              <Button 
+                type="submit"
+                disabled={loading}
+                className="w-full bg-emerald-950 hover:bg-emerald-900 text-white font-black h-20 rounded-3xl transition-all hover:scale-[1.02] active:scale-[0.98] uppercase tracking-tighter text-lg shadow-2xl disabled:opacity-50"
+              >
+                {loading ? <Loader2 className="animate-spin w-6 h-6" /> : <><LogIn className="mr-3 w-6 h-6" /> Authenticate</>}
               </Button>
-            </div>
+            </form>
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
