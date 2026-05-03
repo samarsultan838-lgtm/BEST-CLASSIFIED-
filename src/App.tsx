@@ -13,12 +13,23 @@ import PostAdPage from "./pages/PostAd";
 import NewsPage from "./pages/News";
 import ArticlePage from "./pages/Article";
 import DashboardPage from "./pages/Dashboard";
-import AdminDashboardPage from "./pages/admin/AdminDashboard";
+import AdminDashboardPage from "./pages/AdminDashboard";
+import AdminNewsPage from "./pages/AdminNews";
+import AdminAdsPage from "./pages/AdminAds";
+import PrivacyPage from "./pages/Privacy";
+import TermsPage from "./pages/Terms";
+import AboutPage from "./pages/About";
+import ContactPage from "./pages/ContactPage";
+import AdminSecurityGate from "./components/AdminSecurityGate";
 
 function PrivateRoute({ children, role }: { children: React.ReactNode, role?: string }) {
   const { profile, loading } = useAuth();
   
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
   if (!profile) return <Navigate to="/login" />;
   if (role && profile.role !== role && profile.role !== 'admin') return <Navigate to="/" />;
   
@@ -38,13 +49,19 @@ export default function App() {
             <Route path="/ad/:id/:slug" element={<AdDetailPage />} />
             <Route path="/news" element={<NewsPage />} />
             <Route path="/news/:slug" element={<ArticlePage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             
             {/* User Routes */}
             <Route path="/post-ad" element={<PrivateRoute><PostAdPage /></PrivateRoute>} />
             <Route path="/dashboard/*" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
             
             {/* Admin Routes */}
-            <Route path="/admin/*" element={<PrivateRoute role="admin"><AdminDashboardPage /></PrivateRoute>} />
+            <Route path="/admin" element={<PrivateRoute role="admin"><AdminSecurityGate><AdminDashboardPage /></AdminSecurityGate></PrivateRoute>} />
+            <Route path="/admin/news" element={<PrivateRoute role="admin"><AdminSecurityGate><AdminNewsPage /></AdminSecurityGate></PrivateRoute>} />
+            <Route path="/admin/ads" element={<PrivateRoute role="admin"><AdminSecurityGate><AdminAdsPage /></AdminSecurityGate></PrivateRoute>} />
           </Routes>
         </AppLayout>
         <Toaster position="top-right" />

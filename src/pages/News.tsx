@@ -1,29 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
-import { Newspaper, TrendingUp, Clock, User, ArrowRight, Bookmark } from "lucide-react";
-import { getArticles } from "@/src/lib/firestoreService";
+import { Newspaper, TrendingUp, Clock, ArrowRight, Bookmark, Eye } from "lucide-react";
+import { getArticles, Article } from "../lib/newsService";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import SEO from "../components/SEO";
+import { format } from "date-fns";
 
 export default function NewsPage() {
-  const [articles, setArticles] = useState<any[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      setLoading(true);
-      const data = await getArticles();
-      setArticles(data || []);
-      setLoading(false);
-    };
     fetchArticles();
   }, []);
 
+  const fetchArticles = async () => {
+    setLoading(true);
+    try {
+      const data = await getArticles(true, 12);
+      setArticles(data || []);
+    } catch (error) {
+      console.error("Failed to fetch news:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen font-sans">
+      <SEO 
+        title="Intelligence Reports | Market News" 
+        description="Stay updated with the latest market trends, intelligence reports, and expert analysis on Trazot News."
+        type="website"
+      />
       {/* News Header */}
       <section className="bg-slate-950 border-b border-emerald-900/50 py-32 overflow-hidden relative">
          <div className="absolute top-0 right-0 w-[500px] h-full bg-emerald-500/10 blur-[120px] rounded-full translate-x-1/2"></div>
@@ -73,7 +86,7 @@ export default function NewsPage() {
                       <Card className="group overflow-hidden border-none shadow-2xl hover:shadow-[0_30px_60px_rgba(16,185,129,0.15)] transition-all duration-500 rounded-[3rem] bg-white">
                         <div className="md:flex h-full">
                            <div className="md:w-1/2 aspect-[4/5] md:aspect-auto overflow-hidden relative">
-                              <img src={article.featuredImage} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                              <img src={article.image || "https://picsum.photos/seed/news/800/600"} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                               <div className="absolute top-8 left-8">
                                  <Badge className="bg-emerald-500 text-emerald-950 border-none py-2 px-6 font-black rounded-full shadow-2xl uppercase tracking-widest text-[10px]">{article.category}</Badge>
@@ -83,16 +96,19 @@ export default function NewsPage() {
                               <div>
                                  <div className="flex items-center gap-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8">
                                     <div className="flex items-center gap-2"><Clock className="w-4 h-4 text-emerald-500" /> 5 min read</div>
-                                    <div className="flex items-center gap-2 font-black text-emerald-600/60">#MarketPulse</div>
+                                    <div className="flex items-center gap-2 font-black text-emerald-600/60">#{article.tags?.[0] || 'MarketPulse'}</div>
                                  </div>
                                  <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-8 leading-[0.95] tracking-tighter uppercase group-hover:text-emerald-500 transition-colors">{article.title}</h2>
-                                 <p className="text-slate-500 line-clamp-3 mb-10 leading-relaxed text-lg font-medium opacity-80">{article.excerpt}</p>
+                                 <p className="text-slate-500 line-clamp-3 mb-10 leading-relaxed text-lg font-medium opacity-80">{article.excerpt || article.content.substring(0, 150) + "..."}</p>
                               </div>
-                              <div className="flex items-center justify-between mt-auto">
-                                 <Button variant="ghost" className="p-0 font-black text-emerald-600 hover:bg-transparent group-hover:translate-x-4 transition-transform text-lg uppercase tracking-widest">
-                                    Read Insights <ArrowRight className="ml-3 w-6 h-6" />
+                              <div className="flex items-center justify-between mt-auto pt-6 border-t border-slate-50">
+                                 <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 font-black text-[9px]">{article.authorName?.charAt(0) || 'A'}</div>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{article.publishedAt?.toDate ? format(article.publishedAt.toDate(), "MMM dd, yyyy") : "RECENT"}</span>
+                                 </div>
+                                 <Button variant="ghost" className="p-0 font-black text-emerald-600 hover:bg-transparent group-hover:translate-x-2 transition-transform text-xs uppercase tracking-widest">
+                                    Access Intel <ArrowRight className="ml-2 w-4 h-4" />
                                  </Button>
-                                 <Button variant="ghost" size="icon" className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-300 hover:text-emerald-500 hover:bg-emerald-50 transition-all"><Bookmark className="w-6 h-6" /></Button>
                               </div>
                            </div>
                         </div>

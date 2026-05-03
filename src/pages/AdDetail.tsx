@@ -23,6 +23,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 
+import MapView from "@/src/components/MapView";
+
 const Separator = ({ className }: { className?: string }) => <div className={`h-px bg-slate-100 ${className || ""}`} />;
 
 export default function AdDetailPage() {
@@ -115,6 +117,13 @@ export default function AdDetailPage() {
                    {ad.description}
                 </div>
               </div>
+
+              {ad.latitude && ad.longitude && (
+                <div className="space-y-8">
+                  <h3 className="text-xl font-black text-slate-900 uppercase tracking-widest">Inventory Presence</h3>
+                   <MapView lat={ad.latitude} lng={ad.longitude} address={ad.location} />
+                </div>
+              )}
 
               {/* Safety Tips */}
               <div className="bg-emerald-950 rounded-[2.5rem] p-12 text-white relative overflow-hidden shadow-2xl">

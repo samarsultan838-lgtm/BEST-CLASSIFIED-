@@ -2,12 +2,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Default deny
+    // 0. Global Safety Net - Default Deny
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // Helper functions
+    // --- PHASE 3: Primitive Definitions ---
+
     function isSignedIn() {
       return request.auth != null;
     }
@@ -17,14 +18,9 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+      // Identity verification against trusted source. get() bypasses security rules.
+      return isSignedIn() && 
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-
-    function isEditor() {
-       return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
-             (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' || 
-              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'editor');
     }
 
     function isValidId(id) {
@@ -39,62 +35,113 @@ service cloud.firestore {
       return resource.data;
     }
 
-    // User Rules
+    // --- PHASE 4: Entity Blueprints ---
+
+    // AD VALIDATION BLUEPRINT
+    function isValidAd(data) {
+      return data.keys().hasAll(['userId', 'title', 'description', 'category', 'price', 'status', 'createdAt', 'priority', 'featured']) &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.title is string && data.title.size() >= 5 && data.title.size() <= 200 &&
+             data.description is string && data.description.size() <= 10000 &&
+             data.category is string &&
+             data.price is number && data.price >= 0 &&
+             data.status in ['draft', 'pending', 'approved', 'rejected', 'expired'] &&
+             data.priority in ['normal', 'premium', 'high'] &&
+             data.featured is bool &&
+             (data.createdAt == request.time || data.createdAt is timestamp);
+    }
+
+    // --- MATCH BLOCKS ---
+
+    // 1. USERS - PII Isolation
     match /users/{userId} {
-      allow read: if isSignedIn();
+      // Only owner or admin can read private profiles
+      allow get: if isOwner(userId) || isAdmin();
+      // Public profile data (if any) could be allowed here, but we default to secure.
+      allow list: if isAdmin(); 
+
       allow create: if isOwner(userId) && 
                       incoming().role == 'user' && 
                       incoming().createdAt == request.time;
-      allow update: if isOwner(userId) && 
-                      incoming().role == existing().role && 
-                      incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'profileImage', 'location', 'lastLogin']);
-      allow update: if isAdmin();
+      
+      allow update: if (isOwner(userId) && 
+                       incoming().role == existing().role && 
+                       incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'profileImage', 'location', 'lastLogin'])) ||
+                      isAdmin();
     }
 
-    // Ad Rules
+    // 2. ADS - The "Master Gate" (Attribute-Based Access Control)
     match /ads/{adId} {
-      allow read: if (resource.data.status == 'approved') || isOwner(resource.data.userId) || isAdmin();
+      // Pillar 8: Secure List Queries
+      // Evaluate resource.data directly. Guests can ONLY list approved ads.
+      allow list: if (resource.data.status == 'approved') || 
+                  (isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin()));
+
+      allow get: if (resource.data.status == 'approved') || 
+                 (isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin()));
+
+      // Pillar 2: Validation Blueprints (Anti-Update-Gap)
       allow create: if isSignedIn() && 
+                      isValidAd(incoming()) && 
                       incoming().userId == request.auth.uid && 
                       incoming().status == 'pending' &&
+                      incoming().priority == 'normal' &&
+                      incoming().featured == false &&
                       incoming().createdAt == request.time;
-      allow update: if (isOwner(existing().userId) && existing().status != 'approved' && 
-                        incoming().diff(existing()).affectedKeys().hasOnly(['title', 'description', 'price', 'category', 'images', 'location', 'condition'])) || 
-                      isAdmin();
+
+      allow update: if (
+        // Action: Self-Update (Author)
+        (isOwner(existing().userId) && existing().status != 'approved' && 
+         incoming().userId == existing().userId &&
+         incoming().status == 'pending' && // Reset to pending if edited
+         incoming().priority == existing().priority &&
+         incoming().featured == existing().featured &&
+         incoming().diff(existing()).affectedKeys().hasOnly(['title', 'description', 'price', 'category', 'images', 'location', 'condition', 'status', 'updatedAt'])) ||
+        
+        // Action: Admin Audit
+        (isAdmin() && (
+           // Admin can change status, priority, and promote projects
+           incoming().diff(existing()).affectedKeys().hasAny(['status', 'priority', 'featured', 'adminNotes', 'updatedAt'])
+        ))
+      );
+
       allow delete: if isOwner(existing().userId) || isAdmin();
-
-      // List queries must be filtered
-      allow list: if (resource.data.status == 'approved') || (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
     }
 
-    // News/Articles Rules
+    // 3. NEWS & ARTICLES
+    match /news/{articleId} {
+      allow list: if (resource.data.published == true) || isAdmin();
+      allow get: if (resource.data.published == true) || isAdmin();
+      allow write: if isAdmin();
+    }
+
     match /articles/{articleId} {
-      allow read: if (resource.data.status == 'published') || isEditor();
-      allow write: if isEditor();
-      allow list: if (resource.data.status == 'published') || isEditor();
+      allow list: if (resource.data.status == 'published') || isAdmin();
+      allow get: if (resource.data.status == 'published') || isAdmin();
+      allow write: if isAdmin();
     }
 
-    // Chat Rules
+    // 4. CHATS & MESSAGES
     match /chats/{chatId} {
-      allow read, write: if isSignedIn() && (request.auth.uid in resource.data.participants);
+      allow read: if isSignedIn() && (request.auth.uid in resource.data.participants);
       allow create: if isSignedIn() && (request.auth.uid in incoming().participants);
+      allow update: if isSignedIn() && (request.auth.uid in resource.data.participants) && 
+                      incoming().diff(existing()).affectedKeys().hasOnly(['lastMessage', 'lastMessageAt', 'updatedAt']);
     }
 
     match /chats/{chatId}/messages/{messageId} {
       allow read: if isSignedIn() && (request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants);
       allow create: if isSignedIn() && 
                       (request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants) && 
-                      incoming().senderId == request.auth.uid && 
-                      incoming().createdAt == request.time;
+                      incoming().senderId == request.auth.uid;
     }
 
-    // Category Rules
+    // 5. STATIC COLLECTIONS
     match /categories/{categoryId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Settings Rules
     match /settings/{settingId} {
       allow read: if true;
       allow write: if isAdmin();

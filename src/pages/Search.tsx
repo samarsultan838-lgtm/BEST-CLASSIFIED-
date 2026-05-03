@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { Search as SearchIcon, MapPin, Grid, List as ListIcon, Filter, SlidersHorizontal, ChevronDown, Tag, ArrowRight } from "lucide-react";
+import { Search as SearchIcon, MapPin, Grid, List as ListIcon, Filter, SlidersHorizontal, ChevronDown, Tag, ArrowRight, Zap } from "lucide-react";
 import { getAds } from "@/src/lib/firestoreService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,17 +18,22 @@ export default function SearchPage() {
 
   const category = searchParams.get("category");
   const queryParam = searchParams.get("q");
+  const featuredOnly = searchParams.get("featured") === "true";
 
   useEffect(() => {
     const fetchAds = async () => {
       setLoading(true);
-      // We filter by approved ads for public search
-      const results = await getAds({ status: "approved", category: category || undefined });
+      const results = await getAds({ 
+        status: "approved", 
+        category: category && category !== 'all' ? category : undefined,
+        prioritized: true,
+        featured: featuredOnly ? true : undefined
+      });
       setAds(results || []);
       setLoading(false);
     };
     fetchAds();
-  }, [category, queryParam]);
+  }, [category, queryParam, featuredOnly]);
 
   return (
     <div className="bg-slate-50 min-h-screen font-sans">
@@ -82,6 +87,29 @@ export default function SearchPage() {
                </h3>
                
                <div className="space-y-10">
+                 <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 block">Elite Discovery</label>
+                    <div className="space-y-3">
+                      <label className="flex items-center gap-4 cursor-pointer group">
+                        <div 
+                          onClick={() => {
+                            const newParams = new URLSearchParams(searchParams);
+                            if (featuredOnly) newParams.delete("featured");
+                            else newParams.set("featured", "true");
+                            setSearchParams(newParams);
+                          }}
+                          className={`w-12 h-6 rounded-full transition-all relative flex items-center px-1 ${featuredOnly ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-slate-200 shadow-inner'}`}
+                        >
+                          <motion.div 
+                            animate={{ x: featuredOnly ? 24 : 0 }}
+                            className="w-4 h-4 bg-white rounded-full shadow-lg" 
+                          />
+                        </div>
+                        <span className="text-sm font-black text-slate-900 uppercase tracking-tight">Promotions Only</span>
+                      </label>
+                    </div>
+                 </div>
+
                  <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 block">Price Landscape</label>
                     <div className="grid grid-cols-1 gap-4">
@@ -187,8 +215,13 @@ export default function SearchPage() {
                         <Card className={`group overflow-hidden border-none shadow-2xl hover:shadow-[0_40px_80px_rgba(16,185,129,0.2)] transition-all duration-700 rounded-[3rem] h-full bg-white ${viewMode === "list" ? "flex flex-col md:flex-row" : "flex flex-col"}`}>
                           <div className={`${viewMode === "list" ? "md:w-80 h-auto aspect-square shrink-0" : "aspect-[4/3]"} overflow-hidden relative bg-slate-100`}>
                             <img src={ad.images?.[0]} alt={ad.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-                            <div className="absolute top-6 left-6">
+                            <div className="absolute top-6 left-6 flex flex-col gap-2">
                                <Badge className="bg-emerald-500/90 backdrop-blur text-emerald-950 border-none px-4 py-2 font-black rounded-xl shadow-xl text-[10px] uppercase tracking-widest">{ad.category}</Badge>
+                               {(ad.priority === 'premium' || ad.priority === 'high') && (
+                                 <Badge className="bg-white/90 backdrop-blur-md text-emerald-900 border-none px-4 py-2 font-black rounded-xl shadow-xl text-[10px] uppercase tracking-widest flex items-center gap-1">
+                                   <Zap className="w-3 h-3 fill-emerald-500 text-emerald-500" /> Premium
+                                 </Badge>
+                               )}
                             </div>
                           </div>
                           <CardContent className="p-10 flex flex-col justify-between flex-grow">

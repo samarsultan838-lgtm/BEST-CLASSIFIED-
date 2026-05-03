@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react";
-import { Search, MapPin, TrendingUp, ShieldCheck, Zap, Newspaper, ArrowRight, Car, Home as HomeIcon, Smartphone, Briefcase, ShoppingBag, Laptop } from "lucide-react";
+import { Search, MapPin, TrendingUp, ShieldCheck, Zap, Newspaper, ArrowRight, Car, Home as HomeIcon, Smartphone, Briefcase, ShoppingBag, Laptop, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { getAds } from "../lib/firestoreService";
 
 const CATEGORIES = [
   { name: "Vehicles", icon: Car, color: "bg-blue-500", slug: "vehicles" },
@@ -17,6 +19,28 @@ const CATEGORIES = [
 ];
 
 export default function HomePage() {
+  const [featuredAds, setFeaturedAds] = useState<any[]>([]);
+  const [latestAds, setLatestAds] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch ads with 'approved' status and prioritized sorting
+        const allAds = await getAds({ status: 'approved', prioritized: true, limitCount: 8 });
+        setLatestAds(allAds || []);
+        
+        // Filter those marked as featured for the high-end section
+        setFeaturedAds(allAds?.filter(ad => ad.featured) || []);
+      } catch (error) {
+        console.error("Data fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -105,44 +129,97 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Ads */}
+      {/* Exclusive Promotions (Project Promotion) */}
+      {featuredAds.length > 0 && (
+        <section className="py-24 bg-emerald-950 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
+              <div>
+                 <Badge className="bg-emerald-500 text-emerald-950 font-black uppercase tracking-[0.2em] mb-4">Elite Promotion</Badge>
+                 <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-none">Featured <span className="text-emerald-500">Projects</span></h2>
+              </div>
+              <Link to="/search?featured=true">
+                 <Button variant="outline" className="h-16 px-10 rounded-2xl border-white/20 text-white font-black uppercase tracking-widest hover:bg-white hover:text-emerald-950 transition-all">Explore Elite Network →</Button>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+               {featuredAds.slice(0, 2).map((ad) => (
+                 <motion.div key={ad.id} whileHover={{ y: -10 }} className="group">
+                    <Link to={`/ad/${ad.id}/${ad.title?.toLowerCase().replace(/ /g, '-')}`}>
+                      <Card className="bg-white/5 backdrop-blur-3xl border-none p-1 rounded-[3rem] overflow-hidden shadow-2xl">
+                         <div className="aspect-video relative overflow-hidden rounded-[2.5rem]">
+                            <img src={ad.images?.[0]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-emerald-950 to-transparent opacity-60"></div>
+                            <div className="absolute top-8 left-8">
+                               <Badge className="bg-emerald-500 text-emerald-950 font-black px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest shadow-2xl">Featured Project</Badge>
+                            </div>
+                            <div className="absolute bottom-8 left-8 right-8 text-white">
+                               <h3 className="text-3xl font-black uppercase tracking-tighter mb-2">{ad.title}</h3>
+                               <p className="text-emerald-400 font-bold uppercase tracking-widest text-xs flex items-center gap-2"><MapPin className="w-4 h-4" /> {ad.location?.split(',')[0]}</p>
+                            </div>
+                         </div>
+                      </Card>
+                    </Link>
+                 </motion.div>
+               ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Featured Ads (Prioritized) */}
       <section className="py-24 bg-slate-50 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-emerald-500/5 blur-[120px] rounded-full translate-x-1/2"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="flex justify-between items-end mb-16">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-emerald-100 rounded-2xl text-emerald-600">
                 <TrendingUp className="w-8 h-8" />
               </div>
-              <h2 className="text-4xl font-black text-slate-900 tracking-tight uppercase">Featured Ads</h2>
+              <div>
+                 <h2 className="text-4xl font-black text-slate-900 tracking-tight uppercase leading-none">Market Intelligence</h2>
+                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2">Prioritized verified inventory listings</p>
+              </div>
             </div>
-            <Link to="/search?featured=true" className="text-slate-500 hover:text-emerald-600 font-bold transition-colors">Browse all featured</Link>
+            <Link to="/search" className="text-slate-500 hover:text-emerald-600 font-bold transition-colors uppercase tracking-widest text-xs">Browse Discovery Network →</Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            {[1, 2, 3, 4].map((i) => (
-              <Card key={i} className="overflow-hidden group hover:shadow-2xl transition-all duration-500 border-none rounded-[2rem] bg-white">
+            {loading ? (
+              [1,2,3,4].map(i => <div key={i} className="h-96 rounded-[2rem] bg-slate-200 animate-pulse"></div>)
+            ) : latestAds.map((ad) => (
+              <Card key={ad.id} className="overflow-hidden group hover:shadow-2xl transition-all duration-500 border-none rounded-[2rem] bg-white relative">
                 <div className="aspect-[4/3] bg-slate-200 relative overflow-hidden">
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className="bg-emerald-500 text-emerald-950 text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg">Featured</span>
+                  <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+                    {ad.priority === 'premium' || ad.priority === 'high' ? (
+                      <span className="bg-emerald-500 text-emerald-950 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-2">
+                        <Zap className="w-3 h-3 fill-emerald-950" /> Premium
+                      </span>
+                    ) : (
+                      <span className="bg-white/90 backdrop-blur-md text-emerald-900 text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-sm">Verified</span>
+                    )}
                   </div>
-                  <img src={`https://picsum.photos/seed/${i + 22}/600/450`} alt="Product" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                    <Button className="w-full bg-white text-emerald-600 font-black rounded-xl hover:bg-emerald-50">Quick View</Button>
-                  </div>
+                  <img src={ad.images?.[0] || "https://picsum.photos/seed/ad/600/450"} alt={ad.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <Link to={`/ad/${ad.id}/${ad.title?.toLowerCase().replace(/ /g, '-')}`} className="absolute inset-0 bg-gradient-to-t from-emerald-950/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                    <Button className="w-full bg-emerald-500 text-emerald-950 font-black rounded-xl hover:bg-emerald-400 border-none h-12 uppercase tracking-widest text-xs">Execute Intel</Button>
+                  </Link>
                 </div>
                 <CardContent className="p-8">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-black text-slate-900 text-xl line-clamp-1 group-hover:text-emerald-500 transition-colors">Premium Gadget {i}</h3>
-                    <p className="text-emerald-600 font-black text-xl">$299</p>
+                    <h3 className="font-black text-slate-900 text-lg md:text-xl line-clamp-1 group-hover:text-emerald-500 transition-colors uppercase tracking-tight">{ad.title}</h3>
+                    <p className="text-emerald-500 font-black text-xl tracking-tighter leading-none">${ad.price}</p>
                   </div>
-                  <div className="flex items-center gap-2 text-slate-400 font-bold text-sm mb-6">
+                  <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] uppercase tracking-widest mb-6">
                     <MapPin className="w-4 h-4 text-emerald-500/50" />
-                    <span>Gulberg, Lahore</span>
+                    <span>{ad.location?.split(',')[0]}</span>
                   </div>
                   <div className="flex items-center justify-between pt-6 border-t border-slate-50">
-                    <span className="bg-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1 rounded-lg uppercase tracking-wider">New</span>
-                    <span className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">2 hours ago</span>
+                    <span className="bg-slate-100 text-slate-500 text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-wider">{ad.condition}</span>
+                    <span className="text-slate-300 font-black text-[9px] uppercase tracking-[0.2em]">
+                      {ad.createdAt?.toDate ? format(ad.createdAt.toDate(), "HH:mm") : "RECENT"}
+                    </span>
                   </div>
                 </CardContent>
               </Card>

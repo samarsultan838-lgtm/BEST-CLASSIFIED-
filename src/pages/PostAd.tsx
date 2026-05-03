@@ -16,6 +16,8 @@ import { useAuth } from "@/src/context/AuthContext";
 import { createAd } from "@/src/lib/firestoreService";
 import { toast } from "sonner";
 
+import MapSelector from "@/src/components/MapSelector";
+
 const adSchema = z.object({
   title: z.string().min(10, "Title must be at least 10 characters"),
   description: z.string().min(50, "Description must be at least 50 characters"),
@@ -23,6 +25,8 @@ const adSchema = z.object({
   price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Price must be greater than 0"),
   condition: z.string().min(1, "Please select condition"),
   location: z.string().min(3, "Please provide a specific location"),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
 });
 
 type AdFormValues = z.infer<typeof adSchema>;
@@ -179,11 +183,14 @@ export default function PostAdPage() {
                       </div>
 
                       <div className="space-y-4">
-                        <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Geo Location</Label>
-                        <div className="relative">
-                          <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-emerald-500 font-black" />
-                          <Input {...register("location")} id="location" placeholder="e.g. DHA Phase 5, Lahore" className="pl-14 h-16 rounded-2xl text-lg border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" />
-                        </div>
+                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Inventory Location</Label>
+                        <MapSelector 
+                          onLocationSelect={(lat, lng, address) => {
+                            setValue("location", address);
+                            setValue("latitude", lat);
+                            setValue("longitude", lng);
+                          }} 
+                        />
                         {errors.location && <p className="text-red-500 text-xs font-black uppercase">{errors.location.message}</p>}
                       </div>
                     </div>

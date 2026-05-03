@@ -50,6 +50,8 @@
           }
         },
         "status": { "type": "string", "enum": ["draft", "pending", "approved", "rejected", "expired", "flagged"] },
+        "priority": { "type": "string", "enum": ["normal", "premium", "high"] },
+        "featured": { "type": "boolean" },
         "adminNotes": { "type": "string" },
         "views": { "type": "integer" },
         "approvedBy": { "type": "string" },

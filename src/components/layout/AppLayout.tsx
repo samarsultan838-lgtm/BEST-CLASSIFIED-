@@ -40,7 +40,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Search className="w-4 h-4 group-hover:scale-110 transition-transform" /> Browse
               </Link>
               <Link to="/news" className="text-sm font-black text-slate-500 hover:text-emerald-600 transition-all uppercase tracking-widest flex items-center gap-2 group">
-                <Newspaper className="w-4 h-4 group-hover:scale-110 transition-transform" /> News
+                <Newspaper className="w-4 h-4 group-hover:scale-110 transition-transform" /> Intelligence
+              </Link>
+              <Link to="/about" className="text-sm font-black text-slate-500 hover:text-emerald-600 transition-all uppercase tracking-widest flex items-center gap-2">
+                History
               </Link>
             </nav>
           </div>
@@ -138,8 +141,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <Link to="/post-ad" className="text-4xl font-black text-emerald-500 tracking-tighter uppercase leading-none">Execute Listing</Link>
                   )}
                   <div className="pt-12 border-t border-slate-100 flex flex-col gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                    <p className="flex items-center gap-4"><div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-emerald-500"><Phone className="w-4 h-4" /></div> +923001887808</p>
-                    <p className="flex items-center gap-4"><div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-emerald-500"><Mail className="w-4 h-4" /></div> info@trazot.com</p>
+                    <div className="flex items-center gap-4"><div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-emerald-500"><Phone className="w-4 h-4" /></div> +923001887808</div>
+                    <div className="flex items-center gap-4"><div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-emerald-500"><Mail className="w-4 h-4" /></div> info@trazot.com</div>
                   </div>
                 </nav>
               </SheetContent>
@@ -211,9 +214,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="pt-8 border-t border-emerald-900/50 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-700">
             <p>© 2025 Trazot.com — All Rights Reserved</p>
             <div className="flex gap-8">
-              <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-              <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
-              <Link to="/cookies" className="hover:text-white transition-colors">Cookies</Link>
+              <Link to="/privacy" className="hover:text-white transition-colors">Privacy Protocol</Link>
+              <Link to="/terms" className="hover:text-white transition-colors">Terms of Engagement</Link>
+              <Link to="/admin" className="text-emerald-500 hover:text-emerald-400 font-black tracking-widest text-[8px] border border-emerald-500/20 px-3 py-1 rounded-full hover:bg-emerald-500/5 transition-all">TERMINAL ACCESS →</Link>
             </div>
           </div>
         </div>
