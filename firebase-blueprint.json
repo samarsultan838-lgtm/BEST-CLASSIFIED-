@@ -1,0 +1,165 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Represents a registered user on Trazot.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "role": { "type": "string", "enum": ["guest", "user", "verified_seller", "admin", "editor"] },
+        "profileImage": { "type": "string" },
+        "isVerified": { "type": "boolean" },
+        "verifiedSeller": { "type": "boolean" },
+        "location": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastLogin": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email", "role", "createdAt"]
+    },
+    "Ad": {
+      "title": "Classified Ad",
+      "description": "An advertisement posted by a user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "condition": { "type": "string", "enum": ["new", "used", "refurbished"] },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "location": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "lat": { "type": "number" },
+            "lng": { "type": "number" },
+            "city": { "type": "string" },
+            "country": { "type": "string" }
+          }
+        },
+        "status": { "type": "string", "enum": ["draft", "pending", "approved", "rejected", "expired", "flagged"] },
+        "adminNotes": { "type": "string" },
+        "views": { "type": "integer" },
+        "approvedBy": { "type": "string" },
+        "approvedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "description", "category", "price", "status", "createdAt"]
+    },
+    "Article": {
+      "title": "News Article",
+      "description": "An article published in the news section.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "content": { "type": "string" },
+        "featuredImage": { "type": "string" },
+        "authorId": { "type": "string" },
+        "category": { "type": "string" },
+        "views": { "type": "integer" },
+        "isFeatured": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["draft", "published", "scheduled"] },
+        "metaTitle": { "type": "string" },
+        "metaDescription": { "type": "string" },
+        "publishedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "slug", "content", "authorId", "status", "createdAt"]
+    },
+    "Chat": {
+      "title": "Chat Conversation",
+      "description": "A conversation between two users.",
+      "type": "object",
+      "properties": {
+        "participants": { "type": "array", "items": { "type": "string" } },
+        "lastMessage": { "type": "string" },
+        "lastMessageAt": { "type": "string", "format": "date-time" },
+        "adId": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["participants", "updatedAt"]
+    },
+    "Message": {
+      "title": "Chat Message",
+      "description": "An individual message within a chat.",
+      "type": "object",
+      "properties": {
+        "chatId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["chatId", "senderId", "text", "createdAt"]
+    },
+    "Category": {
+      "title": "Ad Category",
+      "description": "A category for classification.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "slug": { "type": "string" },
+        "icon": { "type": "string" },
+        "parentId": { "type": "string" },
+        "customFields": { "type": "array" }
+      },
+      "required": ["name", "slug"]
+    },
+    "AdminConfig": {
+      "title": "Site Settings",
+      "description": "Global site configurations.",
+      "type": "object",
+      "properties": {
+        "contactPhone": { "type": "string" },
+        "contactEmail": { "type": "string" },
+        "socialLinks": { "type": "object" },
+        "featuredPricing": { "type": "number" }
+      }
+    }
+  },
+  "firestore": {
+    "users": {
+      "schema": "User",
+      "description": "Collection of user profiles."
+    },
+    "ads": {
+      "schema": "Ad",
+      "description": "Collection of classified advertisements."
+    },
+    "articles": {
+      "schema": "Article",
+      "description": "Collection of news articles."
+    },
+    "chats": {
+      "schema": "Chat",
+      "description": "Collection of chat threads."
+    },
+    "chats/{chatId}/messages": {
+      "schema": "Message",
+      "description": "Sub-collection of messages for a chat."
+    },
+    "categories": {
+      "schema": "Category",
+      "description": "Collection of categories."
+    },
+    "settings": {
+      "schema": "AdminConfig",
+      "description": "Global application settings."
+    }
+  }
+}

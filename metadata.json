@@ -1,0 +1,16 @@
+{
+  "name": "TRAZOT",
+  "description": "Buy & Sell Anything, Anywhere — Trusted Marketplace. Featured ads, verified sellers, and expert market news.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "Google OAuth",
+    "Ad Approval System",
+    "News CMS",
+    "Real-time Chat",
+    "Location Services"
+  ]
+}
