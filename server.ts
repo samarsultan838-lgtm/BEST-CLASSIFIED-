@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -10,9 +11,6 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Static assets from ROOT (like firebase-applet-config.json)
-  app.use(express.static(path.join(__dirname, ".")));
-
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -20,7 +18,32 @@ async function startServer() {
       appType: "spa",
     });
     app.use(vite.middlewares);
+
+    // In SPA mode with middleware, Vite doesn't automatically serve index.html 
+    // from the root unless we specifically handle it or let the middleware fall through.
+    // However, for the best experience in this environment, we specifically serve it.
+    app.get('*', async (req, res, next) => {
+      const url = req.originalUrl;
+      try {
+        // Read index.html
+        let template = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
+        // Apply Vite HTML transforms. This injects the Vite client, and also applies
+        // HTML transforms from Vite plugins, e.g. ecosystem plugins that inject scripts.
+        template = await vite.transformIndexHtml(url, template);
+        // Send the transformed HTML back.
+        res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
+      } catch (e) {
+        // If an error is caught, let Vite fix the stack trace so it maps back
+        // to your actual source code.
+        vite.ssrFixStacktrace(e as Error);
+        next(e);
+      }
+    });
   } else {
+    // Static assets from ROOT (like firebase-applet-config.json) - serve FIRST in production
+    // but only for specific files to avoid conflicts with index.html
+    app.use('/firebase-applet-config.json', express.static(path.join(__dirname, "firebase-applet-config.json")));
+
     // Production: serve built files
     const distPath = path.join(__dirname, 'dist');
     app.use(express.static(distPath));
