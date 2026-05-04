@@ -94,6 +94,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await signInWithPopup(auth, googleProvider);
     } catch (error: any) {
       console.error("Google Sign-In Error:", error);
+      if (error.code === 'auth/operation-not-allowed') {
+        throw new Error(`Google Sign-In is currently disabled for project "${auth.app.options.projectId}". Please enable it in the Firebase Console under Authentication > Sign-in method for this specific project.`);
+      }
       if (error.code === 'auth/popup-blocked') {
         throw new Error("Login popup was blocked by your browser. Please allow popups or try opening the app in a new tab.");
       }
@@ -102,12 +105,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithEmail = async (email: string, pass: string) => {
-    await firebaseSignInWithEmailAndPassword(auth, email, pass);
+    try {
+      await firebaseSignInWithEmailAndPassword(auth, email, pass);
+    } catch (error: any) {
+      if (error.code === 'auth/operation-not-allowed') {
+        throw new Error(`Email/Password login is currently disabled for project "${auth.app.options.projectId}". Please enable it in the Firebase Console under Authentication > Sign-in method for this specific project.`);
+      }
+      throw error;
+    }
   };
 
   const signUpWithEmail = async (email: string, pass: string, name: string) => {
-    const userCredential = await firebaseCreateUserWithEmailAndPassword(auth, email, pass);
-    await updateProfile(userCredential.user, { displayName: name });
+    try {
+      const userCredential = await firebaseCreateUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(userCredential.user, { displayName: name });
+    } catch (error: any) {
+      if (error.code === 'auth/operation-not-allowed') {
+        throw new Error(`Email/Password registration is currently disabled for project "${auth.app.options.projectId}". Please enable it in the Firebase Console under Authentication > Sign-in method for this specific project.`);
+      }
+      throw error;
+    }
   };
 
   const signOut = async () => {

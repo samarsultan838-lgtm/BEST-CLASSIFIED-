@@ -21,8 +21,8 @@ export default function LoginPage() {
       await signInWithGoogle();
       toast.success("Welcome to Trazot!");
       navigate("/dashboard");
-    } catch (error) {
-      toast.error("Failed to login with Google");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to login with Google");
       console.error(error);
     }
   };

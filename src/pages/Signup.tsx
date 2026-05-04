@@ -22,8 +22,8 @@ export default function SignupPage() {
       await signInWithGoogle();
       toast.success("Account created successfully!");
       navigate("/dashboard");
-    } catch (error) {
-      toast.error("Failed to sign up with Google");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to sign up with Google");
       console.error(error);
     }
   };
