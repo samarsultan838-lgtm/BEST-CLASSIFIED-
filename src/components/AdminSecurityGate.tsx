@@ -31,8 +31,11 @@ export default function AdminSecurityGate({ children }: AdminSecurityGateProps) 
   const handlePinSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (pin === ADMIN_PIN) {
-      setStep("passkey");
+      setStep("verifying");
       setError("");
+      setTimeout(() => {
+        setIsAuthenticated(true);
+      }, 1500);
     } else {
       setError("Incorrect terminal access code.");
       setPin("");
@@ -125,49 +128,6 @@ export default function AdminSecurityGate({ children }: AdminSecurityGateProps) 
                   Verify Access Code
                 </Button>
               </motion.form>
-            )}
-
-            {step === "passkey" && (
-              <motion.div 
-                key="passkey"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="flex flex-col items-center gap-8"
-              >
-                <div className="relative">
-                  <motion.div 
-                    onClick={handlePasskeyAuth}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`w-32 h-32 rounded-full flex items-center justify-center cursor-pointer transition-all duration-500 ${isScanning ? 'bg-emerald-500' : 'bg-slate-50 border border-slate-100 hover:border-emerald-500/50 shadow-inner'}`}
-                  >
-                    <Fingerprint className={`w-16 h-16 ${isScanning ? 'text-emerald-950' : 'text-slate-400'}`} />
-                  </motion.div>
-                  
-                  {isScanning && (
-                    <motion.div 
-                      initial={{ top: "-10%" }}
-                      animate={{ top: "110%" }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                      className="absolute left-0 right-0 h-1 bg-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.8)] z-10"
-                    />
-                  )}
-                </div>
-
-                <div className="text-center">
-                  <h2 className="text-slate-900 font-black uppercase text-sm tracking-tight mb-1">Passkey Verification</h2>
-                  <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Use biometric sensor or tap to start scan</p>
-                </div>
-
-                <Button 
-                  variant="ghost" 
-                  onClick={() => setStep("pin")}
-                  className="text-slate-400 hover:text-emerald-600 font-bold uppercase text-[10px] tracking-widest"
-                >
-                  Back to PIN access
-                </Button>
-              </motion.div>
             )}
 
             {step === "verifying" && (

@@ -1,151 +1,138 @@
-import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import React, { useState, useEffect, useRef } from "react";
+import { APIProvider, Map, AdvancedMarker, Pin, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 
-// Fix for Leaflet default icon issues in React
-// Using CDN URLs to avoid import errors
-const markerIcon2x = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png";
-const markerIcon = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png";
-const markerShadow = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png";
-
-// @ts-ignore
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
+const API_KEY =
+  process.env.GOOGLE_MAPS_PLATFORM_KEY ||
+  (import.meta as any).env?.VITE_GOOGLE_MAPS_PLATFORM_KEY ||
+  (globalThis as any).GOOGLE_MAPS_PLATFORM_KEY ||
+  '';
+const hasValidKey = Boolean(API_KEY) && API_KEY !== 'YOUR_API_KEY';
 
 interface MapSelectorProps {
   onLocationSelect: (lat: number, lng: number, address: string) => void;
   initialValue?: string;
 }
 
-function LocationMarker({ onSelect }: { onSelect: (lat: number, lng: number) => void }) {
-  const [position, setPosition] = useState<L.LatLng | null>(null);
-  
-  useMapEvents({
-    click(e) {
-      setPosition(e.latlng);
-      onSelect(e.latlng.lat, e.latlng.lng);
-    },
-  });
+function PlacesAutocomplete({ onSelect }: { onSelect: (place: google.maps.places.PlaceResult) => void }) {
+  const [inputValue, setInputValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const placesLib = useMapsLibrary('places');
 
-  return position === null ? null : (
-    <Marker position={position} />
+  useEffect(() => {
+    if (!placesLib || !inputRef.current) return;
+    const autocomplete = new placesLib.Autocomplete(inputRef.current, {
+      fields: ['formatted_address', 'geometry', 'name']
+    });
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place.geometry && place.geometry.location) {
+        onSelect(place);
+        setInputValue(place.formatted_address || place.name || "");
+      }
+    });
+  }, [placesLib]);
+
+  return (
+    <div className="relative flex-grow">
+      <input
+        ref={inputRef}
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        className="w-full h-12 rounded-xl border border-slate-200 px-4 focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-medium z-10"
+        placeholder="Search city or area..."
+      />
+    </div>
   );
 }
 
-// Sub-component to sync map center with search results
-function MapSync({ lat, lng }: { lat: number; lng: number }) {
+function MapClickResponder({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
   const map = useMap();
   useEffect(() => {
-    if (lat && lng) {
-      map.setView([lat, lng], 13);
+    if (!map) return;
+    const listener = map.addListener('click', (e: google.maps.MapMouseEvent) => {
+      if (e.latLng) {
+        onMapClick(e.latLng.lat(), e.latLng.lng());
+      }
+    });
+    return () => google.maps.event.removeListener(listener);
+  }, [map, onMapClick]);
+  return null;
+}
+
+function MapUpdater({ center }: { center: google.maps.LatLngLiteral }) {
+  const map = useMap();
+  useEffect(() => {
+    if (map) {
+      map.panTo(center);
     }
-  }, [lat, lng, map]);
+  }, [center, map]);
   return null;
 }
 
 export default function MapSelector({ onLocationSelect, initialValue }: MapSelectorProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [selectedPos, setSelectedPos] = useState<[number, number] | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleSearch = async () => {
-    if (!searchQuery) return;
-    setLoading(true);
-    try {
-      // Using Nominatim (OpenStreetMap's geocoding service) - completely free for low volume
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`);
-      const data = await response.json();
-      setSearchResults(data);
-    } catch (error) {
-      console.error("Geocoding failed:", error);
-    } finally {
-      setLoading(false);
+  const [selectedPos, setSelectedPos] = useState<google.maps.LatLngLiteral | null>(null);
+  const center = selectedPos || { lat: 30.3753, lng: 69.3451 }; // Default to Pakistan or selected
+  
+  const handlePlaceSelect = (place: google.maps.places.PlaceResult) => {
+    if (place.geometry?.location) {
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+      setSelectedPos({ lat, lng });
+      onLocationSelect(lat, lng, place.formatted_address || place.name || `${lat}, ${lng}`);
     }
   };
 
-  const handleSelectResult = (result: any) => {
-    const lat = parseFloat(result.lat);
-    const lon = parseFloat(result.lon);
-    setSelectedPos([lat, lon]);
-    onLocationSelect(lat, lon, result.display_name);
-    setSearchResults([]);
-    setSearchQuery(result.display_name);
-  };
-
   const handleMapClick = async (lat: number, lng: number) => {
-    setSelectedPos([lat, lng]);
+    setSelectedPos({ lat, lng });
     try {
-      // Reverse geocoding
       const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
       const data = await response.json();
       onLocationSelect(lat, lng, data.display_name || `${lat}, ${lng}`);
-      setSearchQuery(data.display_name || `${lat}, ${lng}`);
     } catch (error) {
       onLocationSelect(lat, lng, `${lat}, ${lng}`);
     }
   };
 
+  if (!hasValidKey) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-slate-100/50 rounded-2xl border-4 border-slate-50 text-center p-8">
+        <h3 className="font-black text-slate-700 uppercase tracking-widest text-sm mb-2">Google Maps API Key Required</h3>
+        <p className="text-[10px] text-slate-500 font-bold max-w-[300px]">
+          Please add a GOOGLE_MAPS_PLATFORM_KEY environment variable to use the Maps integration.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4">
-      <div className="relative">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            className="flex-grow h-12 rounded-xl border border-slate-200 px-4 focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-medium"
-            placeholder="Search city or area..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleSearch())}
-          />
-          <button 
-            type="button"
-            onClick={handleSearch}
-            disabled={loading}
-            className="bg-emerald-500 text-emerald-950 px-6 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-emerald-400 transition-colors disabled:opacity-50"
-          >
-            {loading ? "..." : "Find"}
-          </button>
+    <APIProvider apiKey={API_KEY} version="weekly">
+      <div className="space-y-4 flex flex-col h-[100%] w-full">
+        <div className="flex">
+          <PlacesAutocomplete onSelect={handlePlaceSelect} />
         </div>
         
-        {searchResults.length > 0 && (
-          <div className="absolute z-[1000] w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl overflow-hidden">
-            {searchResults.map((result, idx) => (
-              <div 
-                key={idx}
-                className="p-4 hover:bg-emerald-50 cursor-pointer text-xs font-bold text-slate-600 border-b border-slate-50 last:border-0 transition-colors"
-                onClick={() => handleSelectResult(result)}
-              >
-                {result.display_name}
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="flex-grow rounded-2xl md:rounded-3xl overflow-hidden border-2 md:border-4 border-slate-50 relative z-0 min-h-[300px] md:min-h-[400px] w-full">
+          <Map
+            defaultCenter={{ lat: 30.3753, lng: 69.3451 }}
+            defaultZoom={5}
+            mapId="DEMO_MAP_ID"
+            internalUsageAttributionIds={['gmp_mcp_codeassist_v1_aistudio']}
+            style={{ width: '100%', height: '100%' }}
+            disableDefaultUI={true}
+          >
+            {selectedPos && (
+              <>
+                <AdvancedMarker position={selectedPos}>
+                  <Pin background="#10b981" borderColor="#064e3b" glyphColor="#fff" />
+                </AdvancedMarker>
+                <MapUpdater center={selectedPos} />
+              </>
+            )}
+            <MapClickResponder onMapClick={handleMapClick} />
+          </Map>
+        </div>
       </div>
-
-      <div className="h-[300px] w-full rounded-2xl overflow-hidden border-4 border-slate-50 relative z-0">
-        <MapContainer 
-          center={[30.3753, 69.3451] as any} // Center of Pakistan
-          zoom={5} 
-          style={{ height: "100%", width: "100%" }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          <LocationMarker onSelect={handleMapClick} />
-          {selectedPos && <Marker position={selectedPos} />}
-          {selectedPos && <MapSync lat={selectedPos[0]} lng={selectedPos[1]} />}
-        </MapContainer>
-      </div>
-      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-        Click on the map or search to pin your exact location.
-      </p>
-    </div>
+    </APIProvider>
   );
 }

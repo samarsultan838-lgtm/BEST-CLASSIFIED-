@@ -17,6 +17,7 @@ interface UserProfile {
   email: string;
   role: "guest" | "user" | "verified_seller" | "admin" | "editor";
   profileImage?: string;
+  phone?: string;
   location?: {
     name: string;
     lat: number;

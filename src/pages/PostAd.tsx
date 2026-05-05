@@ -263,7 +263,7 @@ export default function PostAdPage() {
                       initial={{ opacity: 0, x: 50 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -50 }}
-                      className="p-8 md:p-20 space-y-16"
+                      className="p-6 md:p-14 space-y-10 md:space-y-16"
                     >
                       <div className="flex flex-col md:flex-row justify-between items-end gap-8">
                         <div className="space-y-4 max-w-xl text-left">
@@ -288,7 +288,7 @@ export default function PostAdPage() {
                               <div 
                                 key={cat.id}
                                 onClick={() => setValue("category", cat.id)}
-                                className={`group cursor-pointer rounded-[2rem] p-6 md:p-8 border-2 transition-all flex flex-col items-center text-center gap-4 ${
+                                className={`group cursor-pointer rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-8 border-2 transition-all flex flex-col items-center text-center gap-3 md:gap-4 ${
                                   watchCategory === cat.id ? "bg-emerald-500 border-emerald-500 text-emerald-950 scale-105 shadow-2xl shadow-emerald-500/20" : "bg-slate-50 border-slate-50 hover:border-emerald-200 text-slate-400"
                                 }`}
                               >
@@ -317,8 +317,8 @@ export default function PostAdPage() {
                       </div>
 
                       <div className="pt-10 flex justify-end">
-                        <Button type="button" onClick={nextStep} className="w-full md:w-auto bg-emerald-950 hover:bg-emerald-900 text-white font-black h-16 md:h-20 px-12 md:px-16 rounded-2xl md:rounded-3xl text-lg md:text-xl uppercase tracking-tighter transition-all hover:scale-105 group">
-                          Next Matrix <ArrowRight className="ml-4 w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                        <Button type="button" onClick={nextStep} className="w-full md:w-auto bg-emerald-950 hover:bg-emerald-900 text-white font-black h-16 md:h-20 px-8 md:px-16 rounded-2xl md:rounded-3xl text-sm md:text-xl uppercase tracking-tighter transition-all hover:scale-105 group">
+                          Next Matrix <ArrowRight className="ml-2 md:ml-4 w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-2 transition-transform" />
                         </Button>
                       </div>
                     </motion.div>
@@ -330,7 +330,7 @@ export default function PostAdPage() {
                       initial={{ opacity: 0, x: 50 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -50 }}
-                      className="p-8 md:p-20 space-y-16"
+                      className="p-6 md:p-14 space-y-10 md:space-y-16"
                     >
                       <div className="flex justify-between items-end gap-8">
                         <div className="space-y-4 text-left">
@@ -340,7 +340,7 @@ export default function PostAdPage() {
                         <Search className="w-24 h-24 text-slate-50 hidden md:block" />
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                         <div className="space-y-4">
                           <Label htmlFor="price" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Valuation (USD)</Label>
                           <div className="relative">
@@ -415,7 +415,7 @@ export default function PostAdPage() {
                       initial={{ opacity: 0, x: 50 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -50 }}
-                      className="p-8 md:p-20 space-y-16"
+                      className="p-6 md:p-14 space-y-10 md:space-y-16"
                     >
                       <div className="flex justify-between items-end gap-8">
                         <div className="space-y-4 text-left">
@@ -425,7 +425,7 @@ export default function PostAdPage() {
                         <Camera className="w-24 h-24 text-slate-50 hidden md:block" />
                       </div>
 
-                      <div className="space-y-8">
+                      <div className="space-y-6 md:space-y-8">
                         <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Imagery Stream (Static)</Label>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                           <div className="aspect-square bg-slate-50 border-4 border-dashed border-slate-100 rounded-[2rem] md:rounded-[3rem] flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 hover:border-emerald-200 transition-all group shadow-inner">
@@ -442,12 +442,12 @@ export default function PostAdPage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                         <div className="space-y-4">
                           <Label htmlFor="videoUrl" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Video Feed (YouTube/Vimeo)</Label>
                           <div className="relative">
                             <Youtube className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-red-500 font-black" />
-                            <Input {...register("videoUrl")} id="videoUrl" placeholder="https://youtube.com/watch?v=..." className="pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" />
+                            <Input {...register("videoUrl")} id="videoUrl" placeholder="https://youtube.com/watch?v=..." className="pl-12 md:pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner pr-4 text-xs md:text-base md:px-10" />
                           </div>
                           {errors.videoUrl && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.videoUrl.message}</p>}
                         </div>
@@ -456,7 +456,7 @@ export default function PostAdPage() {
                           <Label htmlFor="whatsapp" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Direct Comms (WhatsApp)</Label>
                           <div className="relative">
                             <MessageCircle className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-green-500 font-black" />
-                            <Input {...register("whatsapp")} id="whatsapp" placeholder="+92 300 0000000" className="pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" />
+                            <Input {...register("whatsapp")} id="whatsapp" placeholder="+92 300 0000000" className="pl-12 md:pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner pr-4 text-xs md:text-base md:px-10" />
                           </div>
                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2 text-left">
                             This number enables prompt interest from potential buyers via instant messaging.
@@ -464,9 +464,9 @@ export default function PostAdPage() {
                         </div>
                       </div>
 
-                      <div className="space-y-6">
+                      <div className="space-y-4 md:space-y-6">
                         <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Deployed Geolocation</Label>
-                        <div className="rounded-[2rem] md:rounded-[3.5rem] overflow-hidden border-4 md:border-8 border-slate-50 shadow-2xl h-[300px] md:h-[400px]">
+                        <div className="rounded-[2rem] md:rounded-[3.5rem] overflow-hidden border-2 md:border-8 border-slate-50 shadow-xl h-[350px] md:h-[450px]">
                            <MapSelector 
                             onLocationSelect={(lat, lng, address) => {
                               setValue("location", address);
@@ -495,7 +495,7 @@ export default function PostAdPage() {
                       initial={{ opacity: 0, x: 50 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -50 }}
-                      className="p-8 md:p-20 space-y-16"
+                      className="p-6 md:p-14 space-y-10 md:space-y-16"
                     >
                       <div className="flex justify-between items-end gap-8">
                         <div className="space-y-4 text-left">
@@ -566,12 +566,12 @@ export default function PostAdPage() {
                         ))}
                       </div>
 
-                      <div className="bg-slate-50 p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-8">
-                         <div className="flex items-center gap-6 md:gap-8 text-left">
+                      <div className="bg-slate-50 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
+                         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 md:gap-8 text-center sm:text-left">
                            <div className="w-16 h-16 md:w-20 md:h-20 bg-emerald-500 text-white rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg shadow-emerald-500/20 flex-shrink-0">
                              <Award className="w-8 h-8 md:w-10 md:h-10" />
                            </div>
-                           <div className="text-left">
+                           <div className="text-center sm:text-left pt-2 sm:pt-0">
                              <h4 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-slate-900 leading-none">Security Contract</h4>
                              <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px] md:text-[10px] mt-2">By deploying, you agree to Trazot listing policies v4.0</p>
                            </div>
