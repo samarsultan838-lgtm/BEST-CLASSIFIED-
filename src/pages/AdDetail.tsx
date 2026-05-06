@@ -28,9 +28,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import SEO from "@/src/components/SEO";
-
-import MapView from "@/src/components/MapView";
-
 const Separator = ({ className }: { className?: string }) => <div className={`h-px bg-slate-100 ${className || ""}`} />;
 
 export default function AdDetailPage() {
@@ -231,13 +228,13 @@ export default function AdDetailPage() {
                 </div>
               )}
 
-              {ad.latitude && ad.longitude && (
-                <div className="space-y-8 text-left">
+              {ad.location && (
+                <div className="space-y-4 text-left">
                   <h3 className="text-xl font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                    <MapPin className="text-emerald-500 w-6 h-6" /> Inventory Presence
+                    <MapPin className="text-emerald-500 w-6 h-6" /> Location
                   </h3>
-                   <div className="rounded-[2.5rem] overflow-hidden border-8 border-slate-50 shadow-2xl">
-                     <MapView lat={ad.latitude} lng={ad.longitude} address={ad.location} />
+                   <div className="rounded-[2rem] p-6 bg-slate-50 border border-slate-100 flex items-center gap-4">
+                     <span className="text-slate-600 font-bold uppercase tracking-widest text-sm">{ad.location}</span>
                    </div>
                 </div>
               )}

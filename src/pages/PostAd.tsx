@@ -26,7 +26,12 @@ import {
   Sparkles,
   Search,
   Check,
-  Plus
+  Plus,
+  Box,
+  Settings,
+  Car,
+  Home,
+  Briefcase
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,20 +43,24 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useAuth } from "@/src/context/AuthContext";
 import { createAd } from "@/src/lib/firestoreService";
 import { toast } from "sonner";
-
-import MapSelector from "@/src/components/MapSelector";
-
 const adSchema = z.object({
-  title: z.string().min(10, "Title must be at least 10 characters"),
-  description: z.string().min(50, "Description must be at least 50 characters"),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
   category: z.string().min(1, "Please select a category"),
-  price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Price must be greater than 0"),
-  condition: z.string().min(1, "Please select condition"),
+  price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, "Price must be a valid number"),
+  condition: z.string().optional(),
+  propertyType: z.string().optional(),
+  propertySubType: z.string().optional(),
+  purpose: z.string().optional(),
+  vehicleMake: z.string().optional(),
+  vehicleYear: z.string().optional(),
+  jobType: z.string().optional(),
   location: z.string().min(3, "Please provide a specific location"),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   videoUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
   whatsapp: z.string().min(10, "WhatsApp number must be valid").optional().or(z.literal("")),
+  email: z.string().email("Please enter a valid email address").optional().or(z.literal("")),
   promotionTier: z.enum(["standard", "premium", "spotlight"]),
   features: z.array(z.string()),
 });
@@ -67,16 +76,7 @@ const STEPS: { id: Step; label: string; icon: any }[] = [
   { id: "visibility", label: "Visibility", icon: Award },
 ];
 
-const FEATURES_LIST = [
-  "Warranty Included",
-  "Home Delivery",
-  "Verified History",
-  "Negotiable Price",
-  "Urgent Sale",
-  "Exchange Possible",
-  "Installment Plan",
-  "Showroom Unit"
-];
+
 
 export default function PostAdPage() {
   const { profile } = useAuth();
@@ -95,6 +95,7 @@ export default function PostAdPage() {
       features: [],
       videoUrl: "",
       whatsapp: profile?.phone || "",
+      email: profile?.email || "",
     }
   });
 
@@ -106,15 +107,18 @@ export default function PostAdPage() {
     if (profile?.phone && !watch("whatsapp")) {
       setValue("whatsapp", profile.phone);
     }
+    if (profile?.email && !watch("email")) {
+      setValue("email", profile.email);
+    }
   }, [profile, setValue, watch]);
 
   const nextStep = async () => {
     let fieldsToValidate: (keyof AdFormValues)[] = [];
     
     if (currentStep === "classification") {
-      fieldsToValidate = ["category", "title"];
+      fieldsToValidate = ["category"];
     } else if (currentStep === "details") {
-      fieldsToValidate = ["description", "price", "condition"];
+      fieldsToValidate = ["title", "description", "price", "condition"];
     } else if (currentStep === "media") {
       fieldsToValidate = ["location"];
     }
@@ -184,17 +188,16 @@ export default function PostAdPage() {
           <div className="w-32 h-32 bg-emerald-500 text-white rounded-[2rem] flex items-center justify-center mx-auto mb-10 shadow-lg shadow-emerald-500/20">
             <CheckCircle className="w-16 h-16" />
           </div>
-          <h2 className="text-4xl font-black text-slate-900 mb-6 tracking-tighter uppercase">Ad Manifested!</h2>
+          <h2 className="text-4xl font-black text-slate-900 mb-6 tracking-tighter uppercase">Ad Posted Successfully!</h2>
           <p className="text-slate-500 text-xl mb-12 font-medium leading-relaxed">
-            Your inventory item has been queued for authorization. 
-            The **Trazot Verification Unit** will finalize your listing shortly.
+            Your item is now in review and will be live shortly.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Button onClick={() => navigate("/dashboard")} className="bg-emerald-950 hover:bg-emerald-900 text-white font-black py-8 rounded-3xl text-lg uppercase tracking-tighter shadow-2xl">
-              Merchant Fleet
+              Go to Dashboard
             </Button>
             <Button variant="outline" onClick={() => navigate("/")} className="border-slate-100 font-black py-8 rounded-3xl text-lg uppercase tracking-tighter hover:bg-slate-50">
-              Global Stream
+              Back to Home
             </Button>
           </div>
         </motion.div>
@@ -210,13 +213,13 @@ export default function PostAdPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-black px-6 py-2 rounded-full mb-8 uppercase tracking-[0.3em] text-[10px]">
-              Inventory Node Deployment
+              Post Ad
             </Badge>
             <h1 className="text-5xl md:text-8xl font-black text-white mb-6 tracking-tighter uppercase leading-[0.85]">
-              Deploy <span className="text-emerald-500">Asset</span>
+              Sell <span className="text-emerald-500">Faster</span>
             </h1>
             <p className="text-emerald-100/40 text-lg md:text-2xl font-medium max-w-2xl mx-auto uppercase tracking-widest">
-              Interface version 4.0 // High-Fidelity Listing Protocol
+              Fill out the form below to list your item
             </p>
           </div>
         </div>
@@ -267,23 +270,25 @@ export default function PostAdPage() {
                     >
                       <div className="flex flex-col md:flex-row justify-between items-end gap-8">
                         <div className="space-y-4 max-w-xl text-left">
-                          <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">Global Identification</h2>
-                          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Define the asset class and identifier</p>
+                          <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">Basic Information</h2>
+                          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">What are you selling?</p>
                         </div>
                         <Layers className="w-24 h-24 text-slate-50 hidden md:block" />
                       </div>
 
                       <div className="space-y-12">
                         <div className="space-y-6">
-                          <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Primary Classification</Label>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                          <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Select Category</Label>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                             {[
-                              { id: "vehicles", label: "Vehicles", icon: Zap },
-                              { id: "property", label: "Property", icon: Globe },
+                              { id: "vehicles", label: "Vehicles", icon: Car },
+                              { id: "property", label: "Property", icon: Home },
                               { id: "mobiles" , label: "Mobiles", icon: Shield },
-                              { id: "electronics", label: "Tech", icon: Video },
-                              { id: "jobs", label: "Operations", icon: Info },
-                              { id: "fashion", label: "Apparel", icon: Tag }
+                              { id: "electronics", label: "Electronics", icon: Video },
+                              { id: "fashion", label: "Fashion", icon: Tag },
+                              { id: "machinery", label: "Machinery", icon: Settings },
+                              { id: "jobs", label: "Jobs", icon: Briefcase },
+                              { id: "general", label: "General", icon: Box }
                             ].map((cat) => (
                               <div 
                                 key={cat.id}
@@ -303,22 +308,11 @@ export default function PostAdPage() {
                           </div>
                           {errors.category && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.category?.message}</p>}
                         </div>
-
-                        <div className="space-y-4">
-                          <Label htmlFor="title" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Public Designation (Title)</Label>
-                          <Input 
-                            {...register("title")} 
-                            id="title" 
-                            placeholder="e.g. TOYOTA LAND CRUISER 300 SERIES LX" 
-                            className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-2xl border-slate-100 bg-slate-50 font-black placeholder:text-slate-300 focus:ring-emerald-500 shadow-inner px-8 md:px-10" 
-                          />
-                          {errors.title && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.title.message}</p>}
-                        </div>
                       </div>
 
                       <div className="pt-10 flex justify-end">
                         <Button type="button" onClick={nextStep} className="w-full md:w-auto bg-emerald-950 hover:bg-emerald-900 text-white font-black h-16 md:h-20 px-8 md:px-16 rounded-2xl md:rounded-3xl text-sm md:text-xl uppercase tracking-tighter transition-all hover:scale-105 group">
-                          Next Matrix <ArrowRight className="ml-2 md:ml-4 w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-2 transition-transform" />
+                          Next Step <ArrowRight className="ml-2 md:ml-4 w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-2 transition-transform" />
                         </Button>
                       </div>
                     </motion.div>
@@ -334,15 +328,26 @@ export default function PostAdPage() {
                     >
                       <div className="flex justify-between items-end gap-8">
                         <div className="space-y-4 text-left">
-                          <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">Asset Parameters</h2>
-                          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Configure the internal metrics and features</p>
+                          <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">Ad Details</h2>
+                          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Provide more information about your item</p>
                         </div>
                         <Search className="w-24 h-24 text-slate-50 hidden md:block" />
                       </div>
 
+                      <div className="space-y-4">
+                        <Label htmlFor="title" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Ad Title</Label>
+                        <Input 
+                          {...register("title")} 
+                          id="title" 
+                          placeholder="e.g. iPhone 13 Pro Max 256GB" 
+                          className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-2xl border-slate-100 bg-slate-50 font-black placeholder:text-slate-300 focus:ring-emerald-500 shadow-inner px-8 md:px-10" 
+                        />
+                        {errors.title && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.title.message}</p>}
+                      </div>
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                         <div className="space-y-4">
-                          <Label htmlFor="price" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Valuation (USD)</Label>
+                          <Label htmlFor="price" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">{watchCategory === "jobs" ? "Salary (USD)" : "Price (USD)"}</Label>
                           <div className="relative">
                             <DollarSign className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-emerald-500 font-black" />
                             <Input {...register("price")} id="price" type="number" placeholder="0.00" className="pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" />
@@ -350,27 +355,103 @@ export default function PostAdPage() {
                           {errors.price && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.price.message}</p>}
                         </div>
 
-                        <div className="space-y-4">
-                          <Label htmlFor="condition" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Mechanical Integrity</Label>
-                          <Select value={watch("condition")} onValueChange={(v) => setValue("condition", v)}>
-                            <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
-                              <SelectValue placeholder="Condition" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
-                              <SelectItem value="new">NEW // MINT MODULE</SelectItem>
-                              <SelectItem value="used">USED // CALIBRATED</SelectItem>
-                              <SelectItem value="refurbished">CERTIFIED // RECON</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                        {watchCategory === "property" && (
+                          <>
+                            <div className="space-y-4">
+                              <Label htmlFor="propertyType" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Type of Land</Label>
+                              <Select value={watch("propertyType")} onValueChange={(v) => setValue("propertyType", v)}>
+                                <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
+                                  <SelectValue placeholder="Select Type" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                  <SelectItem value="commercial">Commercial</SelectItem>
+                                  <SelectItem value="residential">Residential</SelectItem>
+                                  <SelectItem value="agriculture">Agriculture</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-4">
+                              <Label htmlFor="propertySubType" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Property Category</Label>
+                              <Select value={watch("propertySubType")} onValueChange={(v) => setValue("propertySubType", v)}>
+                                <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
+                                  <SelectValue placeholder="Select Category" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                  <SelectItem value="plot">Plot</SelectItem>
+                                  <SelectItem value="house">House</SelectItem>
+                                  <SelectItem value="flats">Flats</SelectItem>
+                                  <SelectItem value="portion">Portion</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-4">
+                              <Label htmlFor="purpose" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Purpose</Label>
+                              <Select value={watch("purpose")} onValueChange={(v) => setValue("purpose", v)}>
+                                <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
+                                  <SelectValue placeholder="Select Purpose" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                  <SelectItem value="sale">Sale</SelectItem>
+                                  <SelectItem value="rent">Rent</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </>
+                        )}
+                        
+                        {watchCategory === "vehicles" && (
+                          <>
+                            <div className="space-y-4">
+                              <Label htmlFor="vehicleMake" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Make / Brand</Label>
+                              <Input {...register("vehicleMake")} id="vehicleMake" placeholder="e.g. Toyota, Honda, Ford" className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" />
+                            </div>
+                            <div className="space-y-4">
+                              <Label htmlFor="vehicleYear" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Year</Label>
+                              <Input {...register("vehicleYear")} id="vehicleYear" type="number" placeholder="YYYY" className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" />
+                            </div>
+                          </>
+                        )}
+
+                        {watchCategory === "jobs" && (
+                          <div className="space-y-4">
+                            <Label htmlFor="jobType" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Job Type</Label>
+                            <Select value={watch("jobType")} onValueChange={(v) => setValue("jobType", v)}>
+                              <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
+                                <SelectValue placeholder="Select Type" />
+                              </SelectTrigger>
+                              <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                <SelectItem value="full-time">Full-time</SelectItem>
+                                <SelectItem value="part-time">Part-time</SelectItem>
+                                <SelectItem value="contract">Contract</SelectItem>
+                                <SelectItem value="internship">Internship</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+
+                        {watchCategory !== "property" && watchCategory !== "jobs" && (
+                          <div className="space-y-4">
+                            <Label htmlFor="condition" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Condition</Label>
+                            <Select value={watch("condition")} onValueChange={(v) => setValue("condition", v)}>
+                              <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
+                                <SelectValue placeholder="Condition" />
+                              </SelectTrigger>
+                              <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                <SelectItem value="new">NEW</SelectItem>
+                                <SelectItem value="used">USED</SelectItem>
+                                <SelectItem value="refurbished">REFURBISHED</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
                       </div>
 
                       <div className="space-y-4">
-                        <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Full Specifications</Label>
+                        <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Full Specifications / Details</Label>
                         <Textarea 
                           {...register("description")} 
                           id="description" 
-                          placeholder="Decrypt the full details of your asset here..." 
+                          placeholder="Provide detailed description here..." 
                           className="min-h-[200px] md:min-h-[250px] rounded-[2rem] md:rounded-[3rem] border-slate-100 bg-slate-50 p-8 md:p-10 text-lg md:text-xl font-medium leading-relaxed focus:ring-emerald-500 shadow-inner no-scrollbar" 
                         />
                         {errors.description && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.description.message}</p>}
@@ -379,22 +460,33 @@ export default function PostAdPage() {
                       <div className="space-y-8">
                         <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Extended Capabilities</Label>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {FEATURES_LIST.map((feature) => (
-                            <div 
-                              key={feature}
-                              onClick={() => toggleFeature(feature)}
-                              className={`flex items-center gap-3 p-4 md:p-6 rounded-2xl cursor-pointer transition-all border-2 text-left ${
-                                (watchFeatures || []).includes(feature) ? "bg-emerald-100 border-emerald-500 text-emerald-900" : "bg-slate-50 border-slate-50 text-slate-400 hover:border-slate-200"
-                              }`}
-                            >
-                              <div className={`w-5 h-5 md:w-6 md:h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                                (watchFeatures || []).includes(feature) ? "bg-emerald-500 text-white" : "bg-white"
-                              }`}>
-                                {(watchFeatures || []).includes(feature) && <Check className="w-4 h-4 font-black" />}
+                          {(() => {
+                            let features = ["Warranty Included", "Home Delivery", "Verified History", "Negotiable Price", "Urgent Sale", "Exchange Possible", "Installment Plan", "Good Condition"];
+                            if (watchCategory === "property") features = ["Furnished", "Parking Space", "Security", "Ready to Move", "Corner Plot", "Prime Location", "Urgent Sale", "Negotiable"];
+                            else if (watchCategory === "jobs") features = ["Remote", "Full-time", "Part-time", "Contract", "Health Insurance", "Paid Leave", "Flexible Hours", "Urgent Hiring"];
+                            else if (watchCategory === "vehicles") features = ["Warranty Included", "First Owner", "Dealer Serviced", "Accident Free", "New Tires", "Urgent Sale", "Exchange Possible", "Installment Plan"];
+                            else if (watchCategory === "electronics" || watchCategory === "mobiles") features = ["Under Warranty", "Box Packed", "Used lightly", "Accessories Included", "PTA Approved", "Home Delivery", "Urgent Sale", "Exchange Possible"];
+                            else if (watchCategory === "fashion") features = ["Brand New", "Unworn", "Designer", "Limited Edition", "Original Packaging", "Vintage", "Multiple Sizes", "Home Delivery"];
+                            else if (watchCategory === "machinery") features = ["Imported", "Local Assembly", "Heavy Duty", "Industrial Grade", "Commercial Use", "Under Warranty", "Working Condition", "Needs Repair"];
+                            else if (watchCategory === "general") features = ["Like New", "Used", "Negotiable Price", "Urgent Sale", "Home Delivery", "Exchange Possible", "Handmade", "Vintage"];
+                            
+                            return features.map((feature) => (
+                              <div 
+                                key={feature}
+                                onClick={() => toggleFeature(feature)}
+                                className={`flex items-center gap-3 p-4 md:p-6 rounded-2xl cursor-pointer transition-all border-2 text-left ${
+                                  (watchFeatures || []).includes(feature) ? "bg-emerald-100 border-emerald-500 text-emerald-900" : "bg-slate-50 border-slate-50 text-slate-400 hover:border-slate-200"
+                                }`}
+                              >
+                                <div className={`w-5 h-5 md:w-6 md:h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                  (watchFeatures || []).includes(feature) ? "bg-emerald-500 text-white" : "bg-white"
+                                }`}>
+                                  {(watchFeatures || []).includes(feature) && <Check className="w-4 h-4 font-black" />}
+                                </div>
+                                <span className="font-black uppercase tracking-tighter text-[8px] md:text-[9px]">{feature}</span>
                               </div>
-                              <span className="font-black uppercase tracking-tighter text-[8px] md:text-[9px]">{feature}</span>
-                            </div>
-                          ))}
+                            ));
+                          })()}
                         </div>
                       </div>
 
@@ -403,7 +495,7 @@ export default function PostAdPage() {
                           <ArrowLeft className="mr-4 w-6 h-6" /> Back
                         </Button>
                         <Button type="button" onClick={nextStep} className="bg-emerald-950 hover:bg-emerald-900 text-white font-black h-16 md:h-20 px-12 md:px-16 rounded-2xl md:rounded-3xl text-lg md:text-xl uppercase tracking-tighter transition-all hover:scale-105">
-                          Configure Media <ArrowRight className="ml-4 w-6 h-6" />
+                          Visibility <ArrowRight className="ml-4 w-6 h-6" />
                         </Button>
                       </div>
                     </motion.div>
@@ -419,14 +511,14 @@ export default function PostAdPage() {
                     >
                       <div className="flex justify-between items-end gap-8">
                         <div className="space-y-4 text-left">
-                          <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">Sensory Assets</h2>
-                          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Visual and geospatial data integration</p>
+                          <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">Media & Contact</h2>
+                          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Add photos, videos and contact info</p>
                         </div>
                         <Camera className="w-24 h-24 text-slate-50 hidden md:block" />
                       </div>
 
                       <div className="space-y-6 md:space-y-8">
-                        <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Imagery Stream (Static)</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Photos</Label>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                           <div className="aspect-square bg-slate-50 border-4 border-dashed border-slate-100 rounded-[2rem] md:rounded-[3rem] flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 hover:border-emerald-200 transition-all group shadow-inner">
                             <div className="w-12 h-12 md:w-20 md:h-20 bg-white rounded-2xl md:rounded-3xl shadow-sm flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
@@ -444,16 +536,7 @@ export default function PostAdPage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                         <div className="space-y-4">
-                          <Label htmlFor="videoUrl" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Video Feed (YouTube/Vimeo)</Label>
-                          <div className="relative">
-                            <Youtube className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-red-500 font-black" />
-                            <Input {...register("videoUrl")} id="videoUrl" placeholder="https://youtube.com/watch?v=..." className="pl-12 md:pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner pr-4 text-xs md:text-base md:px-10" />
-                          </div>
-                          {errors.videoUrl && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.videoUrl.message}</p>}
-                        </div>
-
-                        <div className="space-y-4">
-                          <Label htmlFor="whatsapp" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Direct Comms (WhatsApp)</Label>
+                          <Label htmlFor="whatsapp" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">WhatsApp Number (Optional)</Label>
                           <div className="relative">
                             <MessageCircle className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-green-500 font-black" />
                             <Input {...register("whatsapp")} id="whatsapp" placeholder="+92 300 0000000" className="pl-12 md:pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner pr-4 text-xs md:text-base md:px-10" />
@@ -462,18 +545,39 @@ export default function PostAdPage() {
                             This number enables prompt interest from potential buyers via instant messaging.
                           </p>
                         </div>
+
+                        <div className="space-y-4">
+                          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Email Address (Optional)</Label>
+                          <div className="relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-blue-500 font-black"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            <Input {...register("email")} id="email" type="email" placeholder="hello@example.com" className="pl-12 md:pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner pr-4 text-xs md:text-base md:px-10" />
+                          </div>
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2 text-left">
+                            Buyers can send you email inquiries directly.
+                          </p>
+                          {errors.email && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.email.message}</p>}
+                        </div>
+
+                        <div className="space-y-4 md:col-span-2">
+                          <Label htmlFor="videoUrl" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Video Link (Optional)</Label>
+                          <div className="relative">
+                            <Youtube className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-red-500 font-black" />
+                            <Input {...register("videoUrl")} id="videoUrl" placeholder="https://youtube.com/watch?v=..." className="pl-12 md:pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner pr-4 text-xs md:text-base md:px-10" />
+                          </div>
+                          {errors.videoUrl && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.videoUrl.message}</p>}
+                        </div>
                       </div>
 
                       <div className="space-y-4 md:space-y-6">
-                        <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Deployed Geolocation</Label>
-                        <div className="rounded-[2rem] md:rounded-[3.5rem] overflow-hidden border-2 md:border-8 border-slate-50 shadow-xl h-[350px] md:h-[450px]">
-                           <MapSelector 
-                            onLocationSelect={(lat, lng, address) => {
-                              setValue("location", address);
-                              setValue("latitude", lat);
-                              setValue("longitude", lng);
-                            }} 
-                           />
+                        <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Location</Label>
+                        <div className="relative">
+                          <MapPin className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400 font-black" />
+                          <Input 
+                            {...register("location")} 
+                            id="location" 
+                            placeholder="City, Neighborhood or exact address" 
+                            className="pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" 
+                          />
                         </div>
                         {errors.location && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.location.message}</p>}
                       </div>
@@ -499,8 +603,8 @@ export default function PostAdPage() {
                     >
                       <div className="flex justify-between items-end gap-8">
                         <div className="space-y-4 text-left">
-                          <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">Visibility Boost</h2>
-                          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Select your node promotion tier</p>
+                          <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">Final Review</h2>
+                          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Check your details before posting</p>
                         </div>
                         <Award className="w-24 h-24 text-slate-50 hidden md:block" />
                       </div>
@@ -572,8 +676,8 @@ export default function PostAdPage() {
                              <Award className="w-8 h-8 md:w-10 md:h-10" />
                            </div>
                            <div className="text-center sm:text-left pt-2 sm:pt-0">
-                             <h4 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-slate-900 leading-none">Security Contract</h4>
-                             <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px] md:text-[10px] mt-2">By deploying, you agree to Trazot listing policies v4.0</p>
+                             <h4 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-slate-900 leading-none">Posting Policy</h4>
+                             <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px] md:text-[10px] mt-2">By posting this ad, you agree to our terms and conditions.</p>
                            </div>
                          </div>
                          <Button disabled={isSubmitting} type="submit" className="w-full md:w-auto bg-emerald-500 hover:bg-emerald-600 text-emerald-950 font-black h-20 md:h-24 px-12 md:px-16 rounded-2xl md:rounded-[2rem] text-xl md:text-2xl shadow-xl transition-all hover:scale-105 uppercase tracking-tighter">
@@ -582,7 +686,7 @@ export default function PostAdPage() {
                             ) : (
                               <Zap className="mr-4 h-8 w-8 md:h-10 md:w-10" />
                             )}
-                            {isSubmitting ? "FINALIZING..." : "INITIATE DEPLOY"}
+                            {isSubmitting ? "POSTING..." : "POST AD"}
                          </Button>
                       </div>
 
