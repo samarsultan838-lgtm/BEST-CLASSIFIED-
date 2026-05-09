@@ -59,8 +59,12 @@ export default function AdminLoginPage() {
       // AuthContext will fetch the profile, the useEffect above will trigger navigation if they are admin
       toast.success("Admin clearance verified.");
     } catch (error: any) {
-       toast.error("Failed to authenticate admin session");
-       console.error(error);
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+         toast.error("Invalid credentials. If this is a Google account, please use the Google button above.");
+      } else {
+         toast.error(error.message || "Failed to authenticate admin session");
+      }
+      console.error(error);
     } finally {
       setLoading(false);
     }
