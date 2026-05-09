@@ -61,6 +61,7 @@ export const createAd = async (adData: any) => {
       status: 'pending',
       priority: 'normal', // default priority
       featured: false,    // default featured status
+      rankingWeight: 0,   // default ranking weight
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       views: 0,

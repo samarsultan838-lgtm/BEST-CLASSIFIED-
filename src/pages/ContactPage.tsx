@@ -59,9 +59,16 @@ export default function ContactPage() {
             <p className="text-emerald-100/60 font-medium text-lg leading-relaxed mb-10 relative z-10">
               For high-volume sellers and enterprise grade inventory, our specialized trade desk is at your disposal.
             </p>
-            <button className="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black px-10 py-5 rounded-2xl uppercase tracking-tighter relative z-10 transition-transform active:scale-95 shadow-2xl shadow-emerald-500/20">
-              Request Verification Protocol
-            </button>
+            <form className="space-y-6 relative z-10" onSubmit={(e) => { e.preventDefault(); alert('Message sent successfully!'); }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input type="text" placeholder="Full Designation" className="bg-white/10 border-white/20 text-white placeholder:text-white/40 h-16 rounded-2xl px-6 outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold" required />
+                <input type="email" placeholder="Merchant Email" className="bg-white/10 border-white/20 text-white placeholder:text-white/40 h-16 rounded-2xl px-6 outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold" required />
+              </div>
+              <textarea placeholder="Detailed Intelligence (Your Message)" className="w-full bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[150px] rounded-2xl p-6 outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold resize-none" required></textarea>
+              <button type="submit" className="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black px-10 h-16 rounded-2xl uppercase tracking-tighter transition-transform active:scale-95 shadow-2xl shadow-emerald-500/20 w-fit">
+                Submit Intelligence Report
+              </button>
+            </form>
           </div>
         </div>
       }

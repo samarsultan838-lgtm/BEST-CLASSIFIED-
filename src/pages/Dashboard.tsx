@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import { 
   User, 
@@ -12,13 +12,100 @@ import {
   ChevronRight,
   MapPin,
   Clock,
-  ShieldCheck
+  ShieldCheck,
+  Save,
+  Phone,
+  Image as ImageIcon
 } from "lucide-react";
 import { useAuth } from "@/src/context/AuthContext";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/src/lib/firebase";
+
+function ProfileSettings() {
+  const { profile } = useAuth();
+  const [name, setName] = useState(profile?.name || "");
+  const [phone, setPhone] = useState(profile?.phone || "");
+  const [locationName, setLocationName] = useState(profile?.location?.name || "");
+  const [profileImage, setProfileImage] = useState(profile?.profileImage || "");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profile) return;
+    setIsSubmitting(true);
+    try {
+      const userRef = doc(db, "users", profile.uid);
+      await updateDoc(userRef, {
+        name,
+        phone,
+        "location.name": locationName,
+        profileImage,
+        updatedAt: serverTimestamp()
+      });
+      toast.success("Profile Updated Successfully");
+    } catch (error) {
+      toast.error("Failed to update profile");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Card className="rounded-[3rem] border-none shadow-2xl bg-white overflow-hidden">
+      <CardHeader className="p-10 pb-6 border-b border-slate-50">
+        <CardTitle className="text-3xl font-black uppercase tracking-tighter text-slate-900">Profile Settings</CardTitle>
+        <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">Manage your merchant identity</CardDescription>
+      </CardHeader>
+      <CardContent className="p-10">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Full Designation</Label>
+              <div className="relative">
+                <User className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
+                <Input value={name} onChange={(e) => setName(e.target.value)} className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" />
+              </div>
+            </div>
+            <div className="space-y-4">
+              <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Phone Directory</Label>
+              <div className="relative">
+                <Phone className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
+                <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+92 300 0000000" className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Primary Location</Label>
+            <div className="relative">
+              <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
+              <Input value={locationName} onChange={(e) => setLocationName(e.target.value)} placeholder="City, Country" className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Avatar Image URL</Label>
+            <div className="relative">
+              <ImageIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
+              <Input value={profileImage} onChange={(e) => setProfileImage(e.target.value)} placeholder="https://..." className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" />
+            </div>
+          </div>
+
+          <Button type="submit" disabled={isSubmitting} className="w-full h-16 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black rounded-2xl shadow-xl uppercase tracking-tighter text-lg transition-all hover:scale-[1.02]">
+            {isSubmitting ? "Updating..." : <><Save className="w-5 h-5 mr-2" /> Save Profile</>}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
 
 function DashboardHome() {
   const { profile } = useAuth();
@@ -152,11 +239,11 @@ export default function DashboardPage() {
         {/* Content Area */}
         <div className="lg:col-span-9">
            <Routes>
-             <Route index element={<DashboardHome />} />
-             <Route path="my-ads" element={<div>My Ads Management</div>} />
-             <Route path="favorites" element={<div>Favorite Ads</div>} />
-             <Route path="messages" element={<div>Messages / Chat</div>} />
-             <Route path="settings" element={<div>Profile Settings</div>} />
+              <Route index element={<DashboardHome />} />
+              <Route path="my-ads" element={<div className="p-10 bg-white rounded-[3rem] shadow-2xl">My Ads Management Module Coming Soon</div>} />
+              <Route path="favorites" element={<div className="p-10 bg-white rounded-[3rem] shadow-2xl">Watchlist Module Coming Soon</div>} />
+              <Route path="messages" element={<div className="p-10 bg-white rounded-[3rem] shadow-2xl">Messaging Module Coming Soon</div>} />
+              <Route path="settings" element={<ProfileSettings />} />
            </Routes>
         </div>
       </div>

@@ -7,6 +7,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /test/connection {
+      allow read: if true;
+    }
+
     // --- PHASE 3: Primitive Definitions ---
 
     function isSignedIn() {
@@ -66,8 +70,8 @@ service cloud.firestore {
                       (incoming().createdAt == request.time || incoming().createdAt is string);
       
       allow update: if (isOwner(userId) && 
-                       incoming().role == existing().role && 
-                       incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'profileImage', 'location', 'lastLogin', 'createdAt'])) ||
+                       (incoming().role == existing().role || (incoming().role == 'admin' && request.auth.token.email == 'samarsultan838@gmail.com')) && 
+                       incoming().diff(existing()).affectedKeys().hasOnly(['name', 'phone', 'profileImage', 'location', 'lastLogin', 'createdAt', 'role', 'updatedAt'])) ||
                       isAdmin();
     }
 

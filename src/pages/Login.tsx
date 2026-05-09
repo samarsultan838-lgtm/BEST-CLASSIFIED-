@@ -40,7 +40,11 @@ export default function LoginPage() {
       toast.success("Welcome back, Merchant!");
       navigate("/dashboard");
     } catch (error: any) {
-      toast.error(error.message || "Failed to authenticate");
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+         toast.error("Invalid email or password. Please check your credentials or sign up if you don't have an account.");
+      } else {
+         toast.error(error.message || "Failed to authenticate");
+      }
       console.error(error);
     } finally {
       setLoading(false);

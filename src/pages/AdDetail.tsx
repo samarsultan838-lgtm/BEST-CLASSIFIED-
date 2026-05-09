@@ -28,6 +28,41 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import SEO from "@/src/components/SEO";
+import { APIProvider, Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
+
+const API_KEY =
+  process.env.GOOGLE_MAPS_PLATFORM_KEY ||
+  (import.meta as any).env?.VITE_GOOGLE_MAPS_PLATFORM_KEY ||
+  (globalThis as any).GOOGLE_MAPS_PLATFORM_KEY ||
+  '';
+
+function MapDisplay({ lat, lng }: { lat: number, lng: number }) {
+  if (!API_KEY) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-slate-100 p-8 text-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] animate-pulse">
+        <h3 className="font-black text-slate-700 uppercase tracking-widest text-sm mb-2">Google Maps Key Required</h3>
+        <p className="text-xs text-slate-500 font-medium">Add GOOGLE_MAPS_PLATFORM_KEY to view location maps.</p>
+      </div>
+    );
+  }
+  return (
+    <APIProvider apiKey={API_KEY} version="weekly">
+      <Map
+        defaultCenter={{ lat, lng }}
+        defaultZoom={14}
+        mapId="DEMO_MAP_ID"
+        internalUsageAttributionIds={['gmp_mcp_codeassist_v1_aistudio']}
+        style={{ width: '100%', height: '100%' }}
+        disableDefaultUI={true}
+      >
+        <AdvancedMarker position={{ lat, lng }}>
+          <Pin background="#10b981" borderColor="#064e3b" glyphColor="#fff" />
+        </AdvancedMarker>
+      </Map>
+    </APIProvider>
+  );
+}
+
 const Separator = ({ className }: { className?: string }) => <div className={`h-px bg-slate-100 ${className || ""}`} />;
 
 export default function AdDetailPage() {
@@ -228,14 +263,23 @@ export default function AdDetailPage() {
                 </div>
               )}
 
-              {ad.location && (
+               {(ad.location || ad.city || ad.state || ad.country || (ad.latitude && ad.longitude)) && (
                 <div className="space-y-4 text-left">
                   <h3 className="text-xl font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
                     <MapPin className="text-emerald-500 w-6 h-6" /> Location
                   </h3>
+                  {(ad.location || ad.city || ad.state || ad.country) && (
                    <div className="rounded-[2rem] p-6 bg-slate-50 border border-slate-100 flex items-center gap-4">
-                     <span className="text-slate-600 font-bold uppercase tracking-widest text-sm">{ad.location}</span>
+                     <span className="text-slate-600 font-bold uppercase tracking-widest text-sm">
+                       {[ad.location, ad.city, ad.state, ad.country].filter(Boolean).join(", ")}
+                     </span>
                    </div>
+                  )}
+                  {(ad.latitude && ad.longitude) && (
+                     <div className="h-[300px] w-full rounded-[2.5rem] overflow-hidden border-4 border-slate-50 relative z-0">
+                        <MapDisplay lat={ad.latitude} lng={ad.longitude} />
+                     </div>
+                  )}
                 </div>
               )}
 
@@ -344,10 +388,84 @@ export default function AdDetailPage() {
                      <span>Category</span>
                      <span className="text-emerald-600">{ad.category}</span>
                   </div>
-                  <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
-                     <span>Integrity</span>
-                     <span className="text-slate-900">{ad.condition}</span>
-                  </div>
+                  {ad.condition && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Condition</span>
+                       <span className="text-slate-900">{ad.condition}</span>
+                    </div>
+                  )}
+                  {ad.propertyType && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Property Type</span>
+                       <span className="text-slate-900 capitalize">{ad.propertyType}</span>
+                    </div>
+                  )}
+                  {ad.propertySubType && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Sub Type</span>
+                       <span className="text-slate-900 capitalize">{ad.propertySubType.replace('_', ' ')}</span>
+                    </div>
+                  )}
+                  {ad.area && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Area</span>
+                       <span className="text-slate-900">{ad.area} {ad.areaUnit && <span className="capitalize">{ad.areaUnit.replace('_', ' ')}</span>}</span>
+                    </div>
+                  )}
+                  {ad.purpose && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Purpose</span>
+                       <span className="text-slate-900">{ad.purpose}</span>
+                    </div>
+                  )}
+                  {ad.vehicleMake && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Make</span>
+                       <span className="text-slate-900">{ad.vehicleMake}</span>
+                    </div>
+                  )}
+                  {ad.vehicleModel && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Model</span>
+                       <span className="text-slate-900">{ad.vehicleModel}</span>
+                    </div>
+                  )}
+                  {ad.vehicleYear && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Year</span>
+                       <span className="text-slate-900">{ad.vehicleYear}</span>
+                    </div>
+                  )}
+                  {ad.registeredIn && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Registered In</span>
+                       <span className="text-slate-900">{ad.registeredIn}</span>
+                    </div>
+                  )}
+                  {ad.mileage && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Mileage</span>
+                       <span className="text-slate-900">{ad.mileage}</span>
+                    </div>
+                  )}
+                  {ad.fuelType && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Fuel Type</span>
+                       <span className="text-slate-900 capitalize">{ad.fuelType}</span>
+                    </div>
+                  )}
+                  {ad.jobType && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Job Type</span>
+                       <span className="text-slate-900">{ad.jobType}</span>
+                    </div>
+                  )}
+                  {ad.fashionCategory && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>Demographic</span>
+                       <span className="text-slate-900 capitalize">{ad.fashionCategory.replace('_', ' ')}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
                      <span>Priority</span>
                      <span className="text-orange-500">{ad.priority === 'premium' ? 'SPOTLIGHT' : ad.priority === 'high' ? 'FEATURED' : 'STANDARD'}</span>

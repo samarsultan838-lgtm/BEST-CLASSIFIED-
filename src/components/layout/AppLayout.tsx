@@ -216,7 +216,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="flex gap-8">
               <Link to="/privacy" className="hover:text-white transition-colors">Privacy Protocol</Link>
               <Link to="/terms" className="hover:text-white transition-colors">Terms of Engagement</Link>
-              <Link to="/admin" className="text-emerald-500 hover:text-emerald-400 font-black tracking-widest text-[8px] border border-emerald-500/20 px-3 py-1 rounded-full hover:bg-emerald-500/5 transition-all">TERMINAL ACCESS →</Link>
+              {isAdmin && (
+                <Link to="/admin" className="text-emerald-500 hover:text-emerald-400 font-black tracking-widest text-[8px] border border-emerald-500/20 px-3 py-1 rounded-full hover:bg-emerald-500/5 transition-all">TERMINAL ACCESS →</Link>
+              )}
             </div>
           </div>
         </div>

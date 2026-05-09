@@ -41,10 +41,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/src/context/AuthContext";
+import MapSelector from "@/src/components/MapSelector";
 import { createAd } from "@/src/lib/firestoreService";
 import { toast } from "sonner";
 const adSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
+  title: z.string().min(5, "Title must be at least 5 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   category: z.string().min(1, "Please select a category"),
   price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, "Price must be a valid number"),
@@ -52,12 +53,23 @@ const adSchema = z.object({
   propertyType: z.string().optional(),
   propertySubType: z.string().optional(),
   purpose: z.string().optional(),
+  area: z.string().optional(),
+  areaUnit: z.string().optional(),
+  country: z.string().optional(),
+  state: z.string().optional(),
+  city: z.string().optional(),
   vehicleMake: z.string().optional(),
+  vehicleModel: z.string().optional(),
+  registeredIn: z.string().optional(),
+  mileage: z.string().optional(),
+  fuelType: z.string().optional(),
   vehicleYear: z.string().optional(),
   jobType: z.string().optional(),
+  fashionCategory: z.string().optional(),
   location: z.string().min(3, "Please provide a specific location"),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  imageUrl: z.string().url("Please enter a valid image URL").optional().or(z.literal("")),
   videoUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
   whatsapp: z.string().min(10, "WhatsApp number must be valid").optional().or(z.literal("")),
   email: z.string().email("Please enter a valid email address").optional().or(z.literal("")),
@@ -93,6 +105,7 @@ export default function PostAdPage() {
       condition: "new",
       promotionTier: "standard",
       features: [],
+      imageUrl: "",
       videoUrl: "",
       whatsapp: profile?.phone || "",
       email: profile?.email || "",
@@ -102,6 +115,7 @@ export default function PostAdPage() {
   const watchCategory = watch("category");
   const watchPromotionTier = watch("promotionTier");
   const watchFeatures = watch("features");
+  const watchPropertyType = watch("propertyType");
 
   React.useEffect(() => {
     if (profile?.phone && !watch("whatsapp")) {
@@ -149,12 +163,13 @@ export default function PostAdPage() {
     try {
       await createAd({
         ...data,
+        price: Number(data.price),
         userId: profile.uid,
         userName: profile.name,
         userEmail: profile.email,
         userPhone: profile.phone || data.whatsapp,
         userProfileImage: profile.profileImage || "",
-        images: ["https://picsum.photos/seed/ad/800/600"], // Placeholder
+        images: data.imageUrl ? [data.imageUrl] : ["https://picsum.photos/seed/ad/800/600"],
         priority: data.promotionTier === 'standard' ? 'normal' : data.promotionTier === 'premium' ? 'high' : 'premium',
         featured: data.promotionTier !== 'standard',
         status: 'pending',
@@ -358,43 +373,91 @@ export default function PostAdPage() {
                         {watchCategory === "property" && (
                           <>
                             <div className="space-y-4">
-                              <Label htmlFor="propertyType" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Type of Land</Label>
-                              <Select value={watch("propertyType")} onValueChange={(v) => setValue("propertyType", v)}>
-                                <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
-                                  <SelectValue placeholder="Select Type" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
-                                  <SelectItem value="commercial">Commercial</SelectItem>
-                                  <SelectItem value="residential">Residential</SelectItem>
-                                  <SelectItem value="agriculture">Agriculture</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="space-y-4">
-                              <Label htmlFor="propertySubType" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Property Category</Label>
-                              <Select value={watch("propertySubType")} onValueChange={(v) => setValue("propertySubType", v)}>
-                                <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
-                                  <SelectValue placeholder="Select Category" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
-                                  <SelectItem value="plot">Plot</SelectItem>
-                                  <SelectItem value="house">House</SelectItem>
-                                  <SelectItem value="flats">Flats</SelectItem>
-                                  <SelectItem value="portion">Portion</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="space-y-4">
                               <Label htmlFor="purpose" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Purpose</Label>
                               <Select value={watch("purpose")} onValueChange={(v) => setValue("purpose", v)}>
                                 <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
                                   <SelectValue placeholder="Select Purpose" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
-                                  <SelectItem value="sale">Sale</SelectItem>
+                                  <SelectItem value="sale">Sell</SelectItem>
                                   <SelectItem value="rent">Rent</SelectItem>
+                                  <SelectItem value="required">Required</SelectItem>
                                 </SelectContent>
                               </Select>
+                            </div>
+                            <div className="space-y-4">
+                              <Label htmlFor="propertyType" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Type of Property</Label>
+                              <Select value={watch("propertyType")} onValueChange={(v) => setValue("propertyType", v)}>
+                                <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
+                                  <SelectValue placeholder="Select Type" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                  <SelectItem value="residential">Residential</SelectItem>
+                                  <SelectItem value="commercial">Commercial</SelectItem>
+                                  <SelectItem value="agriculture">Agricultural</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            {watchPropertyType && (
+                              <div className="space-y-4">
+                                <Label htmlFor="propertySubType" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Property Category</Label>
+                                <Select value={watch("propertySubType")} onValueChange={(v) => setValue("propertySubType", v)}>
+                                  <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
+                                    <SelectValue placeholder="Select Category" />
+                                  </SelectTrigger>
+                                  <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                    {watchPropertyType === "residential" && (
+                                      <>
+                                        <SelectItem value="plot">Plot</SelectItem>
+                                        <SelectItem value="house">House</SelectItem>
+                                        <SelectItem value="flat">Flat</SelectItem>
+                                        <SelectItem value="villa_farmhouse">Villa/Farm House</SelectItem>
+                                      </>
+                                    )}
+                                    {watchPropertyType === "commercial" && (
+                                      <>
+                                        <SelectItem value="shop">Shop</SelectItem>
+                                        <SelectItem value="plaza">Plaza</SelectItem>
+                                        <SelectItem value="plot">Plot</SelectItem>
+                                      </>
+                                    )}
+                                    {watchPropertyType === "agriculture" && (
+                                      <SelectItem value="land">Land</SelectItem>
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            )}
+                            <div className="space-y-4">
+                              <Label htmlFor="area" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Area / Size</Label>
+                              <div className="flex gap-4">
+                                <Input {...register("area")} id="area" type="number" placeholder="0" className="flex-1 h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" />
+                                <Select value={watch("areaUnit")} onValueChange={(v) => setValue("areaUnit", v)}>
+                                  <SelectTrigger className="w-1/2 h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 tracking-[0.1em] text-sm px-4 md:px-6">
+                                    <SelectValue placeholder="Unit" />
+                                  </SelectTrigger>
+                                  <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                    {(!watchPropertyType || watchPropertyType === "residential") && (
+                                      <>
+                                        <SelectItem value="marla">Marla</SelectItem>
+                                        <SelectItem value="kanal">Kanal</SelectItem>
+                                      </>
+                                    )}
+                                    {watchPropertyType === "commercial" && (
+                                      <>
+                                        <SelectItem value="square_feet">Square feet</SelectItem>
+                                        <SelectItem value="marla">Marla</SelectItem>
+                                      </>
+                                    )}
+                                    {watchPropertyType === "agriculture" && (
+                                      <>
+                                        <SelectItem value="acre">Acre</SelectItem>
+                                        <SelectItem value="kanal">Kanal</SelectItem>
+                                      </>
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                              </div>
                             </div>
                           </>
                         )}
@@ -406,8 +469,36 @@ export default function PostAdPage() {
                               <Input {...register("vehicleMake")} id="vehicleMake" placeholder="e.g. Toyota, Honda, Ford" className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" />
                             </div>
                             <div className="space-y-4">
+                              <Label htmlFor="vehicleModel" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Model</Label>
+                              <Input {...register("vehicleModel")} id="vehicleModel" placeholder="e.g. Corolla, Civic, Ranger" className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" />
+                            </div>
+                            <div className="space-y-4">
                               <Label htmlFor="vehicleYear" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Year</Label>
                               <Input {...register("vehicleYear")} id="vehicleYear" type="number" placeholder="YYYY" className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" />
+                            </div>
+                            <div className="space-y-4">
+                              <Label htmlFor="registeredIn" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Registered In</Label>
+                              <Input {...register("registeredIn")} id="registeredIn" placeholder="e.g. California, Dubai" className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" />
+                            </div>
+                            <div className="space-y-4">
+                              <Label htmlFor="mileage" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Mileage (km/miles)</Label>
+                              <Input {...register("mileage")} id="mileage" placeholder="e.g. 50000" className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" />
+                            </div>
+                            <div className="space-y-4">
+                              <Label htmlFor="fuelType" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Fuel Type</Label>
+                              <Select value={watch("fuelType")} onValueChange={(v) => setValue("fuelType", v)}>
+                                <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
+                                  <SelectValue placeholder="Select Fuel Type" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                  <SelectItem value="petrol">Petrol</SelectItem>
+                                  <SelectItem value="diesel">Diesel</SelectItem>
+                                  <SelectItem value="electric">Electric</SelectItem>
+                                  <SelectItem value="hybrid">Hybrid</SelectItem>
+                                  <SelectItem value="cng">CNG</SelectItem>
+                                  <SelectItem value="lpg">LPG</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
                           </>
                         )}
@@ -424,6 +515,26 @@ export default function PostAdPage() {
                                 <SelectItem value="part-time">Part-time</SelectItem>
                                 <SelectItem value="contract">Contract</SelectItem>
                                 <SelectItem value="internship">Internship</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+
+                        {watchCategory === "fashion" && (
+                          <div className="space-y-4">
+                            <Label htmlFor="fashionCategory" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Category</Label>
+                            <Select value={watch("fashionCategory")} onValueChange={(v) => setValue("fashionCategory", v)}>
+                              <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
+                                <SelectValue placeholder="Select Category" />
+                              </SelectTrigger>
+                              <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                <SelectItem value="men">Men</SelectItem>
+                                <SelectItem value="women">Women</SelectItem>
+                                <SelectItem value="boy">Boy</SelectItem>
+                                <SelectItem value="girl">Girl</SelectItem>
+                                <SelectItem value="kids">Kids</SelectItem>
+                                <SelectItem value="baby_girl">Baby Girl</SelectItem>
+                                <SelectItem value="baby_boy">Baby Boy</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
@@ -462,7 +573,7 @@ export default function PostAdPage() {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {(() => {
                             let features = ["Warranty Included", "Home Delivery", "Verified History", "Negotiable Price", "Urgent Sale", "Exchange Possible", "Installment Plan", "Good Condition"];
-                            if (watchCategory === "property") features = ["Furnished", "Parking Space", "Security", "Ready to Move", "Corner Plot", "Prime Location", "Urgent Sale", "Negotiable"];
+                            if (watchCategory === "property") features = ["Installment", "Approved Society", "Park Facing", "Corner Plot", "Furnished", "Ready to Move", "Security", "Negotiable"];
                             else if (watchCategory === "jobs") features = ["Remote", "Full-time", "Part-time", "Contract", "Health Insurance", "Paid Leave", "Flexible Hours", "Urgent Hiring"];
                             else if (watchCategory === "vehicles") features = ["Warranty Included", "First Owner", "Dealer Serviced", "Accident Free", "New Tires", "Urgent Sale", "Exchange Possible", "Installment Plan"];
                             else if (watchCategory === "electronics" || watchCategory === "mobiles") features = ["Under Warranty", "Box Packed", "Used lightly", "Accessories Included", "PTA Approved", "Home Delivery", "Urgent Sale", "Exchange Possible"];
@@ -519,18 +630,12 @@ export default function PostAdPage() {
 
                       <div className="space-y-6 md:space-y-8">
                         <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Photos</Label>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                          <div className="aspect-square bg-slate-50 border-4 border-dashed border-slate-100 rounded-[2rem] md:rounded-[3rem] flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 hover:border-emerald-200 transition-all group shadow-inner">
-                            <div className="w-12 h-12 md:w-20 md:h-20 bg-white rounded-2xl md:rounded-3xl shadow-sm flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-                              <ImageIcon className="w-6 h-6 md:w-10 md:h-10 text-emerald-500" />
-                            </div>
-                            <span className="text-[8px] md:text-[10px] font-black text-slate-400 group-hover:text-emerald-600 transition-colors tracking-[0.3em]">UPLOAD CORE</span>
+                        <div className="space-y-4">
+                          <div className="relative">
+                            <ImageIcon className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-emerald-500 font-black" />
+                            <Input {...register("imageUrl")} id="imageUrl" placeholder="https://example.com/image.jpg" className="pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner pr-4 text-xs md:text-base md:px-10" />
                           </div>
-                          {[1, 2, 3].map(i => (
-                            <div key={i} className="aspect-square bg-slate-100/50 rounded-[2rem] md:rounded-[3rem] border border-slate-50 flex items-center justify-center">
-                              <span className="text-[8px] md:text-[10px] font-black text-slate-300 uppercase tracking-widest">Slot 0{i+1}</span>
-                            </div>
-                          ))}
+                          {errors.imageUrl && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.imageUrl.message}</p>}
                         </div>
                       </div>
 
@@ -570,16 +675,40 @@ export default function PostAdPage() {
 
                       <div className="space-y-4 md:space-y-6">
                         <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Location</Label>
-                        <div className="relative">
-                          <MapPin className="absolute left-8 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400 font-black" />
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <Input 
-                            {...register("location")} 
-                            id="location" 
-                            placeholder="City, Neighborhood or exact address" 
-                            className="pl-16 h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" 
+                            {...register("country")} 
+                            placeholder="Country" 
+                            className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" 
+                          />
+                          <Input 
+                            {...register("state")} 
+                            placeholder="State" 
+                            className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" 
+                          />
+                          <Input 
+                            {...register("city")} 
+                            placeholder="City" 
+                            className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" 
+                          />
+                        </div>
+                        <div className="relative mt-4">
+                          <MapSelector 
+                            initialValue={watch("location")}
+                            onLocationSelect={(lat, lng, address) => {
+                              setValue("location", address, { shouldValidate: true });
+                              setValue("latitude", lat);
+                              setValue("longitude", lng);
+                            }}
                           />
                         </div>
                         {errors.location && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.location.message}</p>}
+                        
+                        {(watch("latitude") && watch("longitude")) && (
+                          <div className="text-[10px] font-black uppercase text-slate-400 block text-left ml-2 mt-2">
+                             Selected Coords: {watch("latitude")?.toFixed(4)}, {watch("longitude")?.toFixed(4)}
+                          </div>
+                        )}
                       </div>
 
                       <div className="pt-10 flex flex-col md:flex-row justify-between gap-4 text-left">
