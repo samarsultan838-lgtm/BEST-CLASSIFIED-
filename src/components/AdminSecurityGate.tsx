@@ -102,7 +102,7 @@ export default function AdminSecurityGate({ children }: AdminSecurityGateProps) 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between px-1">
                     <label className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2">
-                      <Lock className="w-3 h-3" /> Terminal PIN
+                      <Lock className="w-3 h-3" /> Terminal PIN (Use: 2024)
                     </label>
                   </div>
                   <Input 
