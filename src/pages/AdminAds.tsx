@@ -5,7 +5,8 @@ import {
   toggleFeaturedAd, 
   approveAd, 
   rejectAd,
-  setAdRanking 
+  setAdRanking,
+  deleteAd
 } from "../lib/firestoreService";
 import { useAuth } from "../context/AuthContext";
 import { 
@@ -17,6 +18,7 @@ import {
   CheckCircle2, 
   XCircle,
   Eye,
+  Trash2,
   Filter,
   ArrowUpDown
 } from "lucide-react";
@@ -98,6 +100,18 @@ export default function AdminAds() {
       fetchAds();
     } catch (error) {
       toast.error("Ranking update failed");
+    }
+  };
+
+  const handleDelete = async (adId: string) => {
+    if (confirm("Confirm Deletion of Asset?")) {
+      try {
+        await deleteAd(adId);
+        toast.success("Asset Terminated");
+        fetchAds();
+      } catch (error) {
+        toast.error("Deletion Failed");
+      }
     }
   };
 
@@ -232,6 +246,9 @@ export default function AdminAds() {
 
                                 <DropdownMenuItem className="flex items-center gap-3 p-4 rounded-xl cursor-pointer hover:bg-slate-50 text-slate-900 font-bold border border-slate-100">
                                    <Eye className="w-5 h-5" /> View Intel
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDelete(ad.id)} className="flex items-center gap-3 p-4 rounded-xl cursor-pointer hover:bg-red-50 text-red-600 font-bold mt-2">
+                                   <Trash2 className="w-5 h-5" /> Terminate Asset
                                 </DropdownMenuItem>
                              </DropdownMenuContent>
                           </DropdownMenu>

@@ -22,7 +22,9 @@ import AboutPage from "./pages/About";
 import ContactPage from "./pages/ContactPage";
 import AdminSecurityGate from "./components/AdminSecurityGate";
 
-function PrivateRoute({ children, role }: { children: React.ReactNode, role?: string }) {
+import AdminLoginPage from "./pages/AdminLogin";
+
+function PrivateRoute({ children, role, requireAdminLogin }: { children: React.ReactNode, role?: string, requireAdminLogin?: boolean }) {
   const { profile, loading } = useAuth();
   
   if (loading) return (
@@ -30,8 +32,17 @@ function PrivateRoute({ children, role }: { children: React.ReactNode, role?: st
       <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
   );
-  if (!profile) return <Navigate to="/login" />;
-  if (role && profile.role !== role && profile.role !== 'admin') return <Navigate to="/" />;
+  
+  if (!profile) {
+    if (requireAdminLogin) {
+      return <Navigate to="/admin/login" />;
+    }
+    return <Navigate to="/login" />;
+  }
+  
+  if (role && profile.role !== role && profile.role !== 'admin') {
+    return <Navigate to="/" />;
+  }
   
   return <>{children}</>;
 }
@@ -59,9 +70,10 @@ export default function App() {
             <Route path="/dashboard/*" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
             
             {/* Admin Routes */}
-            <Route path="/admin" element={<PrivateRoute role="admin"><AdminSecurityGate><AdminDashboardPage /></AdminSecurityGate></PrivateRoute>} />
-            <Route path="/admin/news" element={<PrivateRoute role="admin"><AdminSecurityGate><AdminNewsPage /></AdminSecurityGate></PrivateRoute>} />
-            <Route path="/admin/ads" element={<PrivateRoute role="admin"><AdminSecurityGate><AdminAdsPage /></AdminSecurityGate></PrivateRoute>} />
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin" element={<PrivateRoute role="admin" requireAdminLogin><AdminSecurityGate><AdminDashboardPage /></AdminSecurityGate></PrivateRoute>} />
+            <Route path="/admin/news" element={<PrivateRoute role="admin" requireAdminLogin><AdminSecurityGate><AdminNewsPage /></AdminSecurityGate></PrivateRoute>} />
+            <Route path="/admin/ads" element={<PrivateRoute role="admin" requireAdminLogin><AdminSecurityGate><AdminAdsPage /></AdminSecurityGate></PrivateRoute>} />
           </Routes>
         </AppLayout>
         <Toaster position="top-right" />

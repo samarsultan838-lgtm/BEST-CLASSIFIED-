@@ -24,7 +24,7 @@ service cloud.firestore {
     function isAdmin() {
       // Identity verification against trusted source. get() bypasses security rules.
       return isSignedIn() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+             (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' || request.auth.token.email == 'samarsultan838@gmail.com');
     }
 
     function isValidId(id) {
@@ -106,7 +106,7 @@ service cloud.firestore {
         // Action: Admin Audit
         (isAdmin() && (
            // Admin can change status, priority, rankingWeight and promote projects
-           incoming().diff(existing()).affectedKeys().hasAny(['status', 'priority', 'featured', 'rankingWeight', 'adminNotes', 'updatedAt'])
+           incoming().diff(existing()).affectedKeys().hasOnly(['status', 'priority', 'featured', 'rankingWeight', 'adminNotes', 'updatedAt', 'approvedBy', 'approvedAt'])
         ))
       );
 

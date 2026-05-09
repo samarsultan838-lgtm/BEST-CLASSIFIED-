@@ -231,6 +231,16 @@ export const approveAd = async (adId: string, adminId: string) => {
   }
 };
 
+export const deleteAd = async (adId: string) => {
+  const path = `ads/${adId}`;
+  try {
+    const docRef = doc(db, "ads", adId);
+    await deleteDoc(docRef);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, path);
+  }
+};
+
 export const rejectAd = async (adId: string, reason: string) => {
   const path = `ads/${adId}`;
   try {
