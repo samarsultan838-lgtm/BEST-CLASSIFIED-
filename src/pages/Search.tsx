@@ -69,7 +69,7 @@ export default function SearchPage() {
                   <SelectTrigger className="h-14 w-full md:w-56 rounded-3xl border-none bg-white/5 text-white text-lg font-black uppercase tracking-widest px-6 focus:ring-0 shadow-inner">
                       <SelectValue placeholder="Categories" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-emerald-900 bg-emerald-950 text-emerald-100">
+                  <SelectContent className="rounded-2xl border-slate-200 bg-white text-slate-800 shadow-xl p-2">
                       <SelectItem value="all">All Items</SelectItem>
                       <SelectItem value="vehicles">Vehicles</SelectItem>
                       <SelectItem value="property">Property</SelectItem>
@@ -182,7 +182,7 @@ export default function SearchPage() {
                    <SelectTrigger className="w-full md:w-56 h-14 rounded-2xl border-none bg-white shadow-xl text-slate-600 font-black uppercase tracking-widest text-xs px-6">
                       <SelectValue placeholder="Sort" />
                    </SelectTrigger>
-                   <SelectContent className="rounded-2xl">
+                   <SelectContent className="rounded-2xl border-slate-200 bg-white text-slate-800 shadow-xl p-2">
                       <SelectItem value="newest">Newest First</SelectItem>
                       <SelectItem value="price-low">Price: Low to High</SelectItem>
                       <SelectItem value="price-high">Price: High to Low</SelectItem>

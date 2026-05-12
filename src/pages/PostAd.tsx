@@ -377,7 +377,7 @@ export default function PostAdPage() {
                                 <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
                                   <SelectValue placeholder="Select Purpose" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                <SelectContent className="rounded-3xl border-slate-200 bg-white text-slate-800 shadow-xl p-2">
                                   <SelectItem value="sale">Sell</SelectItem>
                                   <SelectItem value="rent">Rent</SelectItem>
                                   <SelectItem value="required">Required</SelectItem>
@@ -390,7 +390,7 @@ export default function PostAdPage() {
                                 <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
                                   <SelectValue placeholder="Select Type" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                <SelectContent className="rounded-3xl border-slate-200 bg-white text-slate-800 shadow-xl p-2">
                                   <SelectItem value="residential">Residential</SelectItem>
                                   <SelectItem value="commercial">Commercial</SelectItem>
                                   <SelectItem value="agriculture">Agricultural</SelectItem>
@@ -404,7 +404,7 @@ export default function PostAdPage() {
                                   <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
                                     <SelectValue placeholder="Select Category" />
                                   </SelectTrigger>
-                                  <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                  <SelectContent className="rounded-3xl border-slate-200 bg-white text-slate-800 shadow-xl p-2">
                                     {watchPropertyType === "residential" && (
                                       <>
                                         <SelectItem value="plot">Plot</SelectItem>
@@ -435,7 +435,7 @@ export default function PostAdPage() {
                                   <SelectTrigger className="w-1/2 h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 tracking-[0.1em] text-sm px-4 md:px-6">
                                     <SelectValue placeholder="Unit" />
                                   </SelectTrigger>
-                                  <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                  <SelectContent className="rounded-3xl border-slate-200 bg-white text-slate-800 shadow-xl p-2">
                                     {(!watchPropertyType || watchPropertyType === "residential") && (
                                       <>
                                         <SelectItem value="marla">Marla</SelectItem>
@@ -489,7 +489,7 @@ export default function PostAdPage() {
                                 <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
                                   <SelectValue placeholder="Select Fuel Type" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                                <SelectContent className="rounded-3xl border-slate-200 bg-white text-slate-800 shadow-xl p-2">
                                   <SelectItem value="petrol">Petrol</SelectItem>
                                   <SelectItem value="diesel">Diesel</SelectItem>
                                   <SelectItem value="electric">Electric</SelectItem>
@@ -509,7 +509,7 @@ export default function PostAdPage() {
                               <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
                                 <SelectValue placeholder="Select Type" />
                               </SelectTrigger>
-                              <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                              <SelectContent className="rounded-3xl border-slate-200 bg-white text-slate-800 shadow-xl p-2">
                                 <SelectItem value="full-time">Full-time</SelectItem>
                                 <SelectItem value="part-time">Part-time</SelectItem>
                                 <SelectItem value="contract">Contract</SelectItem>
@@ -526,7 +526,7 @@ export default function PostAdPage() {
                               <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
                                 <SelectValue placeholder="Select Category" />
                               </SelectTrigger>
-                              <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                              <SelectContent className="rounded-3xl border-slate-200 bg-white text-slate-800 shadow-xl p-2">
                                 <SelectItem value="men">Men</SelectItem>
                                 <SelectItem value="women">Women</SelectItem>
                                 <SelectItem value="boy">Boy</SelectItem>
@@ -546,7 +546,7 @@ export default function PostAdPage() {
                               <SelectTrigger className="h-16 md:h-20 rounded-2xl md:rounded-3xl border-slate-100 bg-slate-50 font-black text-slate-600 uppercase tracking-[0.2em] text-xs px-8 md:px-10">
                                 <SelectValue placeholder="Condition" />
                               </SelectTrigger>
-                              <SelectContent className="rounded-3xl border-emerald-900 bg-emerald-950 text-white">
+                              <SelectContent className="rounded-3xl border-slate-200 bg-white text-slate-800 shadow-xl p-2">
                                 <SelectItem value="new">NEW</SelectItem>
                                 <SelectItem value="used">USED</SelectItem>
                                 <SelectItem value="refurbished">REFURBISHED</SelectItem>
