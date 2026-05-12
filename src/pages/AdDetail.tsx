@@ -28,40 +28,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import SEO from "@/src/components/SEO";
-import { APIProvider, Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
-
-const API_KEY =
-  process.env.GOOGLE_MAPS_PLATFORM_KEY ||
-  (import.meta as any).env?.VITE_GOOGLE_MAPS_PLATFORM_KEY ||
-  (globalThis as any).GOOGLE_MAPS_PLATFORM_KEY ||
-  '';
-
-function MapDisplay({ lat, lng }: { lat: number, lng: number }) {
-  if (!API_KEY) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full bg-slate-100 p-8 text-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] animate-pulse">
-        <h3 className="font-black text-slate-700 uppercase tracking-widest text-sm mb-2">Google Maps Key Required</h3>
-        <p className="text-xs text-slate-500 font-medium">Add GOOGLE_MAPS_PLATFORM_KEY to view location maps.</p>
-      </div>
-    );
-  }
-  return (
-    <APIProvider apiKey={API_KEY} version="weekly">
-      <Map
-        defaultCenter={{ lat, lng }}
-        defaultZoom={14}
-        mapId="DEMO_MAP_ID"
-        internalUsageAttributionIds={['gmp_mcp_codeassist_v1_aistudio']}
-        style={{ width: '100%', height: '100%' }}
-        disableDefaultUI={true}
-      >
-        <AdvancedMarker position={{ lat, lng }}>
-          <Pin background="#10b981" borderColor="#064e3b" glyphColor="#fff" />
-        </AdvancedMarker>
-      </Map>
-    </APIProvider>
-  );
-}
 
 const Separator = ({ className }: { className?: string }) => <div className={`h-px bg-slate-100 ${className || ""}`} />;
 
@@ -274,11 +240,6 @@ export default function AdDetailPage() {
                        {[ad.location, ad.city, ad.state, ad.country].filter(Boolean).join(", ")}
                      </span>
                    </div>
-                  )}
-                  {(ad.latitude && ad.longitude) && (
-                     <div className="h-[300px] w-full rounded-[2.5rem] overflow-hidden border-4 border-slate-50 relative z-0">
-                        <MapDisplay lat={ad.latitude} lng={ad.longitude} />
-                     </div>
                   )}
                 </div>
               )}

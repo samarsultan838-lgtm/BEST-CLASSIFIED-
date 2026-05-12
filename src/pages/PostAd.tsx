@@ -41,7 +41,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/src/context/AuthContext";
-import MapSelector from "@/src/components/MapSelector";
 import { createAd } from "@/src/lib/firestoreService";
 import { toast } from "sonner";
 const adSchema = z.object({
@@ -693,22 +692,13 @@ export default function PostAdPage() {
                           />
                         </div>
                         <div className="relative mt-4">
-                          <MapSelector 
-                            initialValue={watch("location")}
-                            onLocationSelect={(lat, lng, address) => {
-                              setValue("location", address, { shouldValidate: true });
-                              setValue("latitude", lat);
-                              setValue("longitude", lng);
-                            }}
+                          <Input 
+                            {...register("location")} 
+                            placeholder="Full Address / Location" 
+                            className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" 
                           />
                         </div>
                         {errors.location && <p className="text-red-500 text-[10px] font-black uppercase block text-left ml-2">{errors.location.message}</p>}
-                        
-                        {(watch("latitude") && watch("longitude")) && (
-                          <div className="text-[10px] font-black uppercase text-slate-400 block text-left ml-2 mt-2">
-                             Selected Coords: {watch("latitude")?.toFixed(4)}, {watch("longitude")?.toFixed(4)}
-                          </div>
-                        )}
                       </div>
 
                       <div className="pt-10 flex flex-col md:flex-row justify-between gap-4 text-left">

@@ -42,7 +42,11 @@ export default function AdminLoginPage() {
   useEffect(() => {
     // If already logged in and admin, redirect to admin dashboard
     if (profile?.role === "admin") {
+      toast.success("Admin clearance verified.");
       navigate("/admin");
+    } else if (profile) {
+      toast.error("Insufficient permissions. Admin clearance required.");
+      navigate("/");
     }
   }, [profile, navigate]);
 
@@ -57,10 +61,12 @@ export default function AdminLoginPage() {
     try {
       await signInWithEmail(email, password);
       // AuthContext will fetch the profile, the useEffect above will trigger navigation if they are admin
-      toast.success("Admin clearance verified.");
     } catch (error: any) {
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-         toast.error("Invalid credentials. If this is a Google account, please use the Google button above.");
+         toast.error("Invalid credentials.", {
+            description: "If you usually use Google, use the Google button. If you are new, sign up on the public page first.",
+            duration: 8000
+         });
       } else {
          toast.error(error.message || "Failed to authenticate admin session");
       }
@@ -70,13 +76,16 @@ export default function AdminLoginPage() {
     }
   };
 
-  const handleGoogleLogin = async () => {
+    const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     try {
       await signInWithGoogle();
-      toast.success("Admin clearance verified via Google.");
+      // Wait for profile effect to redirect and show success
     } catch (error: any) {
-      toast.error(error.message || "Failed to sign in with Google");
+      toast.error(error.message || "Failed to sign in with Google", {
+        description: "If you are on mobile or in preview, try opening the app in a new tab.",
+        duration: 8000,
+      });
       console.error(error);
     } finally {
       setGoogleLoading(false);
@@ -109,6 +118,7 @@ export default function AdminLoginPage() {
           </CardHeader>
           <CardContent className="space-y-8 px-12 pb-12">
             <Button 
+                type="button"
                 onClick={handleGoogleLogin}
                 disabled={googleLoading || loading}
                 variant="outline"

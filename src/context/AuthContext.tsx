@@ -3,12 +3,13 @@ import {
   onAuthStateChanged, 
   User as FirebaseUser, 
   signInWithPopup, 
+  signInWithRedirect,
   signOut as firebaseSignOut,
   signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
   createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword,
   updateProfile
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db, googleProvider } from "../lib/firebase";
 
 interface UserProfile {
@@ -55,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Auto-upgrade this specific user to admin if they are not already
             if (firebaseUser.email === "samarsultan838@gmail.com" && profileData.role !== "admin") {
               const updatedProfile = { ...profileData, role: "admin" as const };
-              await setDoc(doc(db, "users", firebaseUser.uid), updatedProfile);
+              await updateDoc(doc(db, "users", firebaseUser.uid), { role: "admin" });
               setProfile(updatedProfile);
             } else {
               setProfile(profileData);
@@ -99,7 +100,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(`Google Sign-In is currently disabled for project "${auth.app.options.projectId}". Please enable it in the Firebase Console under Authentication > Sign-in method for this specific project.`);
       }
       if (error.code === 'auth/popup-blocked') {
-        throw new Error("Login popup was blocked by your browser. Please allow popups or try opening the app in a new tab.");
+        console.warn("Popup blocked, trying redirect...");
+        await signInWithRedirect(auth, googleProvider);
+        return;
       }
       throw error;
     }
