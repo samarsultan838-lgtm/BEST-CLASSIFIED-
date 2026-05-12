@@ -65,7 +65,7 @@ const adSchema = z.object({
   vehicleYear: z.string().optional(),
   jobType: z.string().optional(),
   fashionCategory: z.string().optional(),
-  location: z.string().min(3, "Please provide a specific location"),
+  location: z.string().optional().or(z.literal("")),
   imageUrl: z.string().url("Please enter a valid image URL").optional().or(z.literal("")),
   videoUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
   whatsapp: z.string().min(10, "WhatsApp number must be valid").optional().or(z.literal("")),
@@ -239,7 +239,7 @@ export default function PostAdPage() {
 
       <div className="container mx-auto px-4 relative z-20 max-w-5xl">
         {/* Step Indicator */}
-        <div className="bg-white/80 backdrop-blur-3xl rounded-[2.5rem] p-4 mb-12 shadow-2xl border border-white/50 flex items-center justify-between overflow-x-auto no-scrollbar">
+        <div className="bg-white/80 backdrop-blur-3xl rounded-3xl md:rounded-[2.5rem] p-3 md:p-4 mb-8 md:mb-12 shadow-2xl border border-white/50 flex items-center justify-between overflow-x-auto no-scrollbar gap-2 md:gap-0">
           {STEPS.map((step, idx) => {
             const Icon = step.icon;
             const isActive = currentStep === step.id;
@@ -248,19 +248,19 @@ export default function PostAdPage() {
             return (
               <div 
                 key={step.id}
-                className={`flex items-center gap-4 px-8 py-4 rounded-3xl transition-all flex-shrink-0 ${
+                className={`flex items-center gap-2 md:gap-4 px-4 md:px-8 py-3 md:py-4 rounded-2xl md:rounded-3xl transition-all flex-shrink-0 ${
                   isActive ? "bg-emerald-500 text-emerald-950 scale-105 shadow-xl shadow-emerald-500/20" : 
                   isPast ? "text-emerald-600" : "text-slate-300"
                 }`}
               >
-                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
+                <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl flex items-center justify-center ${
                   isActive ? "bg-white/30" : isPast ? "bg-emerald-50" : "bg-slate-50"
                 }`}>
-                  {isPast ? <Check className="w-5 h-5 font-black" /> : <Icon className="w-5 h-5" />}
+                  {isPast ? <Check className="w-4 h-4 md:w-5 md:h-5 font-black" /> : <Icon className="w-4 h-4 md:w-5 md:h-5" />}
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">{step.label}</span>
+                <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em]">{step.label}</span>
                 {idx < STEPS.length - 1 && (
-                  <div className={`w-8 h-[2px] mx-4 ${isPast ? "bg-emerald-500" : "bg-slate-100"}`} />
+                  <div className={`w-4 md:w-8 h-[2px] mx-2 md:mx-4 hidden sm:block ${isPast ? "bg-emerald-500" : "bg-slate-100"}`} />
                 )}
               </div>
             );
@@ -291,7 +291,7 @@ export default function PostAdPage() {
                       <div className="space-y-12">
                         <div className="space-y-6">
                           <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Select Category</Label>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                             {[
                               { id: "vehicles", label: "Vehicles", icon: Car },
                               { id: "property", label: "Property", icon: Home },
@@ -567,7 +567,7 @@ export default function PostAdPage() {
 
                       <div className="space-y-8">
                         <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Extended Capabilities</Label>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                           {(() => {
                             let features = ["Warranty Included", "Home Delivery", "Verified History", "Negotiable Price", "Urgent Sale", "Exchange Possible", "Installment Plan", "Good Condition"];
                             if (watchCategory === "property") features = ["Installment", "Approved Society", "Park Facing", "Corner Plot", "Furnished", "Ready to Move", "Security", "Negotiable"];
@@ -636,7 +636,7 @@ export default function PostAdPage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-12">
                         <div className="space-y-4">
                           <Label htmlFor="whatsapp" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">WhatsApp Number (Optional)</Label>
                           <div className="relative">
@@ -726,7 +726,7 @@ export default function PostAdPage() {
                         <Award className="w-24 h-24 text-slate-50 hidden md:block" />
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
                         {[
                           { 
                             id: "standard", 

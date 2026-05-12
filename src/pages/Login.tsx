@@ -64,18 +64,18 @@ export default function LoginPage() {
         className="w-full max-w-xl"
       >
         <Card className="shadow-[0_80px_160px_rgba(0,0,0,0.1)] border-none rounded-[3.5rem] overflow-hidden bg-white">
-          <CardHeader className="space-y-6 text-center p-16 pb-12">
+          <CardHeader className="space-y-4 md:space-y-6 text-center p-8 sm:p-12 md:p-16 pb-6 md:pb-12">
             <div className="mx-auto bg-emerald-500 p-4 rounded-3xl w-max shadow-2xl shadow-emerald-500/30 -rotate-6">
-              <ShieldCheck className="w-10 h-10 text-emerald-950" />
+              <ShieldCheck className="w-8 h-8 md:w-10 md:h-10 text-emerald-950" />
             </div>
             <div>
-              <CardTitle className="text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none mb-3">Security Access</CardTitle>
-              <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">
+              <CardTitle className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none mb-3">Security Access</CardTitle>
+              <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[9px] md:text-[10px]">
                 Validate your identity to access the marketplace
               </CardDescription>
             </div>
           </CardHeader>
-          <CardContent className="space-y-10 px-16 pb-16">
+          <CardContent className="space-y-8 md:space-y-10 px-6 sm:px-12 md:px-16 pb-8 md:pb-16">
             <form onSubmit={handleEmailLogin} className="space-y-8">
               <div className="space-y-4">
                 <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Merchant Email</Label>
@@ -121,11 +121,11 @@ export default function LoginPage() {
                 <span className="w-full border-t border-slate-50" />
               </div>
               <div className="relative flex justify-center text-[10px] uppercase tracking-[0.3em]">
-                <span className="bg-white px-6 text-slate-200 font-black">Social Sync</span>
+                <span className="bg-white px-4 md:px-6 text-slate-200 font-black">Social Sync</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
               <Button onClick={handleGoogleLogin} variant="outline" className="h-16 rounded-2xl font-black border-slate-100 hover:bg-slate-50 uppercase tracking-tighter transition-all group">
                 <svg className="mr-3 h-5 w-5 grayscale group-hover:grayscale-0 transition-all" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -140,8 +140,8 @@ export default function LoginPage() {
               </Button>
             </div>
           </CardContent>
-          <CardFooter className="justify-center border-t border-slate-50 bg-slate-50/30 p-10">
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none">
+          <CardFooter className="justify-center border-t border-slate-50 bg-slate-50/30 p-6 md:p-10">
+            <p className="text-[9px] md:text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none">
               New Recruit?{" "}
               <Link to="/signup" className="text-emerald-600 hover:underline ml-2">
                 Join the Network

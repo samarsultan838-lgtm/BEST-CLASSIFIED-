@@ -61,18 +61,18 @@ export default function SignupPage() {
         className="w-full max-w-xl"
       >
         <Card className="shadow-[0_80px_160px_rgba(0,0,0,0.1)] border-none rounded-[3.5rem] overflow-hidden bg-white">
-          <CardHeader className="space-y-6 text-center p-16 pb-12">
+          <CardHeader className="space-y-4 md:space-y-6 text-center p-8 sm:p-12 md:p-16 pb-6 md:pb-12">
             <div className="mx-auto bg-emerald-500 p-4 rounded-3xl w-max shadow-2xl shadow-emerald-500/30 rotate-6">
-              <ShieldCheck className="w-10 h-10 text-emerald-950" />
+              <ShieldCheck className="w-8 h-8 md:w-10 md:h-10 text-emerald-950" />
             </div>
             <div>
-              <CardTitle className="text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none mb-3">Merchant Enrollment</CardTitle>
-              <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">
+              <CardTitle className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none mb-3">Merchant Enrollment</CardTitle>
+              <CardDescription className="text-slate-400 font-bold uppercase tracking-widest text-[9px] md:text-[10px]">
                 Create your credentials for the global network
               </CardDescription>
             </div>
           </CardHeader>
-          <CardContent className="space-y-10 px-16 pb-16">
+          <CardContent className="space-y-8 md:space-y-10 px-6 sm:px-12 md:px-16 pb-8 md:pb-16">
             <form onSubmit={handleEmailSignup} className="space-y-8">
               <div className="space-y-4">
                 <Label htmlFor="fullname" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Full Designation</Label>
@@ -143,8 +143,8 @@ export default function SignupPage() {
                 Sign up with Google
             </Button>
           </CardContent>
-          <CardFooter className="justify-center border-t border-slate-50 bg-slate-50/30 p-10">
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none">
+          <CardFooter className="justify-center border-t border-slate-50 bg-slate-50/30 p-6 md:p-10">
+            <p className="text-[9px] md:text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none">
               Registered Merchant?{" "}
               <Link to="/login" className="text-emerald-600 hover:underline ml-2">
                 Secure Login

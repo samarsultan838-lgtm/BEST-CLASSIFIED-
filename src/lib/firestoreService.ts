@@ -177,6 +177,17 @@ export const getArticleBySlug = async (slug: string) => {
   }
 };
 
+export const getUsers = async () => {
+  const path = "users";
+  try {
+    const q = query(collection(db, path), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, path);
+  }
+};
+
 // ADMIN
 export const getPendingAds = async () => {
   const path = "ads";

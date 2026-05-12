@@ -20,7 +20,6 @@ import PrivacyPage from "./pages/Privacy";
 import TermsPage from "./pages/Terms";
 import AboutPage from "./pages/About";
 import ContactPage from "./pages/ContactPage";
-import AdminSecurityGate from "./components/AdminSecurityGate";
 
 import AdminLoginPage from "./pages/AdminLogin";
 
@@ -71,9 +70,9 @@ export default function App() {
             
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLoginPage />} />
-            <Route path="/admin" element={<PrivateRoute role="admin" requireAdminLogin><AdminSecurityGate><AdminDashboardPage /></AdminSecurityGate></PrivateRoute>} />
-            <Route path="/admin/news" element={<PrivateRoute role="admin" requireAdminLogin><AdminSecurityGate><AdminNewsPage /></AdminSecurityGate></PrivateRoute>} />
-            <Route path="/admin/ads" element={<PrivateRoute role="admin" requireAdminLogin><AdminSecurityGate><AdminAdsPage /></AdminSecurityGate></PrivateRoute>} />
+            <Route path="/admin" element={<PrivateRoute role="admin" requireAdminLogin><AdminDashboardPage /></PrivateRoute>} />
+            <Route path="/admin/news" element={<PrivateRoute role="admin" requireAdminLogin><AdminNewsPage /></PrivateRoute>} />
+            <Route path="/admin/ads" element={<PrivateRoute role="admin" requireAdminLogin><AdminAdsPage /></PrivateRoute>} />
           </Routes>
         </AppLayout>
         <Toaster position="top-right" />
