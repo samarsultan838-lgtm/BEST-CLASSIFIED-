@@ -66,8 +66,6 @@ const adSchema = z.object({
   jobType: z.string().optional(),
   fashionCategory: z.string().optional(),
   location: z.string().min(3, "Please provide a specific location"),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
   imageUrl: z.string().url("Please enter a valid image URL").optional().or(z.literal("")),
   videoUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
   whatsapp: z.string().min(10, "WhatsApp number must be valid").optional().or(z.literal("")),

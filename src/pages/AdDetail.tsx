@@ -229,7 +229,7 @@ export default function AdDetailPage() {
                 </div>
               )}
 
-               {(ad.location || ad.city || ad.state || ad.country || (ad.latitude && ad.longitude)) && (
+               {(ad.location || ad.city || ad.state || ad.country) && (
                 <div className="space-y-4 text-left">
                   <h3 className="text-xl font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
                     <MapPin className="text-emerald-500 w-6 h-6" /> Location
