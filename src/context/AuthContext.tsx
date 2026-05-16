@@ -104,7 +104,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await signInWithRedirect(auth, googleProvider);
         return;
       }
-      throw error;
+      if (error.code === 'auth/popup-closed-by-user') {
+        throw new Error("Google Login popup was closed or blocked. If you are in the AI Studio preview, please click 'Open App' to open it in a new tab to sign in.");
+      }
+      throw new Error(error.message || "Failed to sign in with Google. If in preview, try opening the app in a new tab.");
     }
   };
 
