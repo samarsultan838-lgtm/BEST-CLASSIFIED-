@@ -27,7 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { AdminNav } from "../components/admin/AdminNav";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -133,7 +133,7 @@ export default function AdminAds() {
         </div>
       </div>
       
-      <AdminNav />
+
 
       <div className="flex justify-between items-center bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
         <div className="flex gap-2">

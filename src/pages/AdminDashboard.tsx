@@ -9,244 +9,299 @@ import {
   BarChart3, 
   Bell, 
   ArrowUpRight,
+  ArrowDownRight,
   ShieldAlert,
   ChevronRight,
   Zap,
   Star,
   ShoppingBag,
-  UserCircle
+  UserCircle,
+  Activity,
+  DollarSign,
+  Server,
+  Database,
+  Cpu,
+  Plus
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { getAds, getPendingAds, getUsers } from "../lib/firestoreService";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-import { AdminNav } from "../components/admin/AdminNav";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { format } from "date-fns";
 
 export default function AdminDashboard() {
   const { profile } = useAuth();
   const [stats, setStats] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [ads, setAds] = useState<any[]>([]);
+  const [pendingAds, setPendingAds] = useState<any[]>([]);
 
   useEffect(() => {
-    fetchStats();
-    fetchAllUsers();
+    fetchData();
   }, []);
 
-  const fetchStats = async () => {
+  const fetchData = async () => {
     try {
       const allAds = await getAds({ status: 'approved' });
       const pending = await getPendingAds();
+      setAds(allAds || []);
+      setPendingAds(pending || []);
+      
       const premiumCount = allAds?.filter(a => a.priority === 'premium' || a.priority === 'high').length || 0;
       const featuredCount = allAds?.filter(a => a.featured).length || 0;
+      const usersData = await getUsers();
+      setUsers(usersData || []);
 
       setStats([
-        { label: "Active Assets", value: allAds?.length || 0, icon: ShoppingBag, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-        { label: "Verification Queue", value: pending?.length || 0, icon: ShieldAlert, color: "text-orange-500", bg: "bg-orange-500/10" },
-        { label: "Premium Protocols", value: premiumCount, icon: Zap, color: "text-blue-500", bg: "bg-blue-500/10" },
-        { label: "Promoted Projects", value: featuredCount, icon: Star, color: "text-purple-500", bg: "bg-purple-500/10" },
+        { label: "Total Revenue (MTD)", value: "$64,250", trend: "+12.5%", isUp: true, icon: DollarSign, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+        { label: "Active Users", value: usersData?.length || 0, trend: "+5.2%", isUp: true, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
+        { label: "Active Listings", value: allAds?.length || 0, trend: "+8.1%", isUp: true, icon: ShoppingBag, color: "text-indigo-500", bg: "bg-indigo-500/10" },
+        { label: "Pending Approvals", value: pending?.length || 0, trend: "-2.4%", isUp: false, icon: ShieldAlert, color: "text-orange-500", bg: "bg-orange-500/10" },
       ]);
     } catch (error) {
       console.error("Dashboard intel failure:", error);
     }
   };
 
-  const fetchAllUsers = async () => {
-    try {
-      const usersData = await getUsers();
-      setUsers(usersData || []);
-    } catch (error) {
-      console.error("Failed to fetch users");
-    }
-  };
+  const revenueData = [
+    { name: 'Mon', total: 12400 },
+    { name: 'Tue', total: 21000 },
+    { name: 'Wed', total: 18500 },
+    { name: 'Thu', total: 24200 },
+    { name: 'Fri', total: 32000 },
+    { name: 'Sat', total: 41500 },
+    { name: 'Sun', total: 38000 },
+  ];
+
+  const trafficData = [
+    { name: 'W1', visitors: 42000 },
+    { name: 'W2', visitors: 38000 },
+    { name: 'W3', visitors: 55000 },
+    { name: 'W4', visitors: 62000 },
+    { name: 'W5', visitors: 58000 },
+    { name: 'W6', visitors: 71000 },
+    { name: 'W7', visitors: 84000 },
+  ];
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700 lg:px-4">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+      {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none mb-4 whitespace-nowrap">Command Center</h1>
-          <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Secure Administrative Environment | Logged as {profile?.role}</p>
+          <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 leading-none mb-2">Command Center</h1>
+          <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] md:text-xs">Advanced Platform Analytics & Operations</p>
         </div>
-        <div className="flex gap-4 w-full md:w-auto justify-between md:justify-end">
-          <Badge className="bg-emerald-950 text-emerald-500 px-6 py-2 rounded-xl font-black uppercase tracking-widest border-none shadow-lg">
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <Badge className="bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl font-black uppercase tracking-widest border-none text-[10px]">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-2 inline-block"></span>
             System Online
           </Badge>
-          <div className="bg-white p-3 rounded-xl shadow-lg text-slate-400 cursor-pointer hover:bg-slate-50 transition-colors">
-            <Bell className="w-5 h-5" />
-          </div>
+          <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs h-10 px-4">
+             <Link to="/admin/settings"><Settings className="w-4 h-4 mr-2" /> Settings</Link>
+          </Button>
         </div>
       </div>
 
-      <AdminNav />
+      {/* Quick Actions Bar */}
+      <div className="flex flex-nowrap overflow-x-auto pb-4 gap-4 hide-scrollbar">
+         <Button asChild variant="outline" className="h-14 rounded-2xl border-slate-200 bg-white hover:border-emerald-500 hover:bg-emerald-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
+            <Link to="/admin/ads"><Plus className="w-4 h-4 mr-2 text-emerald-500" /> New Ad Campaign</Link>
+         </Button>
+         <Button asChild variant="outline" className="h-14 rounded-2xl border-slate-200 bg-white hover:border-blue-500 hover:bg-blue-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
+            <Link to="/admin/news"><FileText className="w-4 h-4 mr-2 text-blue-500" /> Publish Article</Link>
+         </Button>
+         <Button asChild variant="outline" className="h-14 rounded-2xl border-slate-200 bg-white hover:border-purple-500 hover:bg-purple-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
+            <Link to="/admin/homepage"><Star className="w-4 h-4 mr-2 text-purple-500" /> Modify Homepage</Link>
+         </Button>
+         <Button asChild variant="outline" className="h-14 rounded-2xl border-slate-200 bg-white hover:border-orange-500 hover:bg-orange-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
+            <Link to="/admin/reports"><ShieldAlert className="w-4 h-4 mr-2 text-orange-500" /> Review Reports</Link>
+         </Button>
+      </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-4">
+      {/* Key Metrics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {stats.map((stat, i) => (
-          <Card key={i} className="border-none shadow-2xl rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-white group hover:scale-[1.02] transition-all cursor-pointer" onClick={() => stat.label.includes('Ads') && window.location.assign('/admin/ads')}>
+          <Card key={i} className="border-none shadow-xl shadow-slate-200/40 rounded-[2rem] bg-white group hover:-translate-y-1 transition-all duration-300">
             <CardContent className="p-6 md:p-8">
               <div className="flex justify-between items-start mb-6">
                 <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color}`}>
                   <stat.icon className="w-6 h-6" />
                 </div>
-                <div className="text-emerald-500 flex items-center gap-1 text-[10px] font-black uppercase tracking-widest">
-                  <ArrowUpRight className="w-3 h-3" /> 12%
+                <div className={`flex items-center gap-1 text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${stat.isUp ? 'text-emerald-600 bg-emerald-50' : 'text-red-500 bg-red-50'}`}>
+                  {stat.isUp ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />} 
+                  {stat.trend}
                 </div>
               </div>
-              <h3 className="text-slate-400 font-black uppercase tracking-widest text-[10px] mb-1">{stat.label}</h3>
-              <p className="text-2xl md:text-3xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
+              <p className="text-3xl font-black text-slate-900 tracking-tighter mb-2">{stat.value}</p>
+              <h3 className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">{stat.label}</h3>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-10">
-        {/* News & Articles Control */}
-        <Card className="xl:col-span-8 border-none shadow-2xl rounded-3xl md:rounded-[3rem] bg-white overflow-hidden">
-          <CardHeader className="p-6 md:p-10 pb-0">
-             <CardTitle className="text-xl md:text-2xl font-black uppercase tracking-tighter flex flex-col md:flex-row md:items-center justify-between gap-4">
-                Intelligence Management
-                <Link to="/admin/news" className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] hover:underline">Manage All Articles →</Link>
-             </CardTitle>
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
+        <Card className="lg:col-span-4 border-none shadow-xl shadow-slate-200/40 rounded-[2rem] bg-white overflow-hidden">
+          <CardHeader className="p-6 md:p-8 flex flex-row items-center justify-between">
+             <div>
+               <CardTitle className="text-xl font-black uppercase tracking-tighter text-slate-900">Revenue Flow</CardTitle>
+               <CardDescription className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Platform gross volume (7 Days)</CardDescription>
+             </div>
+             <Badge className="bg-slate-100 text-slate-600 border-none font-bold">Total: $183,400</Badge>
           </CardHeader>
-          <CardContent className="p-6 md:p-10 space-y-4">
-             {[1, 2, 3].map((item) => (
-               <div key={item} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 md:p-6 rounded-2xl bg-slate-50 hover:bg-emerald-50 transition-colors group cursor-pointer gap-4">
-                  <div className="flex items-center gap-4 md:gap-6">
-                     <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-xl shadow-sm overflow-hidden flex-shrink-0">
-                        <img src={`https://picsum.photos/seed/${item}/200`} className="w-full h-full object-cover" alt="" />
-                     </div>
-                     <div>
-                        <h4 className="text-base md:text-lg font-black text-slate-900 transition-colors group-hover:text-emerald-600 line-clamp-1">Global Market Trends Q2 2025</h4>
-                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Published 2h ago by Admin</p>
-                     </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-slate-200 group-hover:text-emerald-500 transform group-hover:translate-x-1 transition-all hidden sm:block" />
-               </div>
-             ))}
+          <CardContent className="px-6 md:px-8 pb-8">
+             <div className="h-[320px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={revenueData} barSize={40}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b', fontWeight: 700 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b', fontWeight: 700 }} dx={-10} tickFormatter={(value) => `$${value/1000}k`} />
+                    <RechartsTooltip 
+                       cursor={{ fill: '#f8fafc' }}
+                       contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontWeight: 'bold', padding: '12px 20px' }}
+                       formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
+                    />
+                    <Bar dataKey="total" fill="#10b981" radius={[8, 8, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+             </div>
           </CardContent>
         </Card>
 
-        {/* System Health */}
-        <Card className="xl:col-span-4 border-none shadow-2xl rounded-3xl md:rounded-[3rem] bg-emerald-950 text-white relative overflow-hidden">
-           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[100px]"></div>
-           <CardHeader className="p-6 md:p-10 relative z-10">
-              <CardTitle className="text-lg md:text-xl font-black uppercase tracking-tighter flex items-center gap-3">
-                 <ShieldAlert className="w-5 h-5 md:w-6 md:h-6 text-emerald-500" />
-                 System Health
-              </CardTitle>
-           </CardHeader>
-           <CardContent className="p-6 md:p-10 pt-0 relative z-10 space-y-8">
-              <div className="space-y-4">
-                 <div className="flex justify-between text-[10px] md:text-[11px] font-black uppercase tracking-widest text-emerald-500/50">
-                    <span>Server Load</span>
-                    <span>24%</span>
-                 </div>
-                 <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 w-1/4"></div>
-                 </div>
-              </div>
-              <div className="space-y-4">
-                 <div className="flex justify-between text-[10px] md:text-[11px] font-black uppercase tracking-widest text-emerald-500/50">
-                    <span>Database Sync</span>
-                    <span>Stable</span>
-                 </div>
-                 <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 w-[95%]"></div>
-                 </div>
-              </div>
-
-              <div className="pt-8 border-t border-white/5">
-                 <Button className="w-full h-14 md:h-16 bg-white/5 hover:bg-white/10 text-emerald-500 font-black uppercase tracking-widest rounded-2xl border-none">
-                    Security Audit
-                 </Button>
-              </div>
-           </CardContent>
+        <Card className="lg:col-span-3 border-none shadow-xl shadow-slate-200/40 rounded-[2rem] bg-white overflow-hidden">
+          <CardHeader className="p-6 md:p-8">
+             <CardTitle className="text-xl font-black uppercase tracking-tighter text-slate-900">Traffic Analysis</CardTitle>
+             <CardDescription className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Weekly active users</CardDescription>
+          </CardHeader>
+          <CardContent className="px-6 md:px-8 pb-8">
+             <div className="h-[320px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={trafficData}>
+                    <defs>
+                      <linearGradient id="colorVis" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b', fontWeight: 700 }} dy={10} />
+                    <RechartsTooltip 
+                       contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontWeight: 'bold' }}
+                       formatter={(value: number) => [value.toLocaleString(), 'Visitors']}
+                    />
+                    <Area type="monotone" dataKey="visitors" stroke="#3b82f6" strokeWidth={4} fillOpacity={1} fill="url(#colorVis)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+             </div>
+          </CardContent>
         </Card>
       </div>
 
-      {/* Members Directory */}
-      <Card className="border-none shadow-2xl rounded-3xl md:rounded-[3rem] bg-white overflow-hidden mb-10">
-        <CardHeader className="p-6 md:p-10 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
-            <CardTitle className="text-xl md:text-2xl font-black uppercase tracking-tighter text-slate-900 flex items-center gap-3">
-              <Users className="w-6 h-6 text-emerald-500" /> Members Directory
-            </CardTitle>
-            <CardDescription className="text-[10px] font-black tracking-widest uppercase text-slate-400 mt-2">
-               Monitor and manage registered users
-            </CardDescription>
-          </div>
-          <Badge className="bg-emerald-50 text-emerald-600 font-black tracking-widest text-[10px] uppercase border-none px-4 py-2">
-            {users.length} Total Users
-          </Badge>
-        </CardHeader>
-        <CardContent className="p-0">
-          <ScrollArea className="h-[400px]">
-            <div className="min-w-[800px]">
-              <Table>
-                <TableHeader className="bg-white">
-                  <TableRow className="border-slate-100 hover:bg-transparent">
-                    <TableHead className="py-6 px-10 text-[10px] font-black text-slate-400 uppercase tracking-widest">User Profile</TableHead>
-                    <TableHead className="py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Role</TableHead>
-                    <TableHead className="py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Joined</TableHead>
-                    <TableHead className="py-6 pr-10 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center py-10 text-slate-400 font-bold">No users found.</TableCell>
-                    </TableRow>
-                  ) : (
-                    users.map((user) => (
-                      <TableRow key={user.id} className="border-slate-50 hover:bg-slate-50/50">
-                        <TableCell className="px-10 py-4">
-                          <div className="flex items-center gap-4">
-                             {user.profileImage ? (
-                               <img src={user.profileImage} alt={user.name} className="w-10 h-10 rounded-xl object-cover" />
-                             ) : (
-                               <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
-                                  <UserCircle className="w-6 h-6" />
-                               </div>
-                             )}
-                             <div>
-                               <div className="font-bold text-slate-900 text-sm">{user.name || "Unknown User"}</div>
-                               <div className="text-xs text-slate-400 font-medium">{user.email}</div>
-                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                           <Badge variant="outline" className={`font-black uppercase tracking-widest text-[9px] border-none ${
-                             user.role === 'admin' ? 'bg-emerald-50 text-emerald-600' : 
-                             user.role === 'editor' ? 'bg-blue-50 text-blue-600' : 
-                             'bg-slate-100 text-slate-600'
-                           }`}>
-                             {user.role || "User"}
-                           </Badge>
-                        </TableCell>
-                        <TableCell className="text-xs text-slate-500 font-medium">
-                           {new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
-                        </TableCell>
-                        <TableCell className="pr-10 text-right">
-                           <Button className="h-8 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-xs rounded-lg px-3">
-                              View Details
-                           </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+      {/* Advanced Lower Section: System Health & Verifications */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+         {/* Verification Queue Section */}
+         <Card className="lg:col-span-8 border-none shadow-xl shadow-slate-200/40 rounded-[2rem] bg-white overflow-hidden">
+          <CardHeader className="p-6 md:p-8 border-b border-slate-50 flex flex-row items-center justify-between bg-slate-50/50">
+            <div>
+               <CardTitle className="text-xl font-black uppercase tracking-tighter text-slate-900 flex items-center gap-3">
+                  <ShieldAlert className="w-5 h-5 text-orange-500" /> Pending Verifications
+               </CardTitle>
+               <CardDescription className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Assets requiring manual review</CardDescription>
             </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+            <Button asChild variant="ghost" className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 font-bold text-xs uppercase tracking-widest h-10 px-4 rounded-xl">
+               <Link to="/admin/ads?filter=pending">Review All</Link>
+            </Button>
+          </CardHeader>
+          <CardContent className="p-0">
+             <ScrollArea className="h-[380px]">
+               <div className="divide-y divide-slate-50">
+                 {pendingAds.length === 0 ? (
+                    <div className="p-12 text-center text-slate-400 font-bold text-sm">No pending assets to verify.</div>
+                 ) : (
+                    pendingAds.slice(0, 5).map((ad) => (
+                      <div key={ad.id} className="p-6 hover:bg-slate-50/50 transition-colors flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
+                         <div className="flex gap-4 items-center">
+                            <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0 shadow-inner">
+                               {ad.images?.[0] ? (
+                                  <img src={ad.images[0]} alt={ad.title} className="w-full h-full object-cover" />
+                               ) : null}
+                            </div>
+                            <div>
+                               <h4 className="font-black text-slate-900 text-sm md:text-base leading-tight mb-1">{ad.title}</h4>
+                               <div className="flex items-center gap-3 mt-2">
+                                  <Badge className="bg-orange-50 text-orange-600 font-bold text-[9px] uppercase tracking-widest border-none">Pending Review</Badge>
+                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{ad.category}</span>
+                               </div>
+                            </div>
+                         </div>
+                         <div className="flex items-center gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+                            <Button asChild variant="outline" className="flex-1 sm:flex-none border-emerald-200 text-emerald-700 hover:bg-emerald-50 h-10 rounded-xl font-bold text-[10px] uppercase tracking-widest">
+                               <Link to={`/admin/ads`}>Process</Link>
+                            </Button>
+                         </div>
+                      </div>
+                    ))
+                 )}
+               </div>
+             </ScrollArea>
+          </CardContent>
+        </Card>
+
+         {/* System Health Monitor */}
+         <Card className="lg:col-span-4 border-none shadow-xl shadow-slate-200/40 rounded-[2rem] bg-slate-900 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[100px] pointer-events-none"></div>
+            <CardHeader className="p-8 pb-4 relative z-10 border-b border-white/5">
+               <CardTitle className="text-xl font-black uppercase tracking-tighter flex items-center gap-3 text-white">
+                  <Activity className="w-5 h-5 text-emerald-400" /> Infrastructure Health
+               </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 relative z-10 space-y-8">
+               <div className="space-y-3">
+                  <div className="flex justify-between items-center text-[10px] md:text-xs font-black uppercase tracking-widest text-emerald-400 flex-wrap">
+                     <span className="flex items-center gap-2"><Cpu className="w-4 h-4" /> Server Core Load</span>
+                     <span>32%</span>
+                  </div>
+                  <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                     <div className="h-full bg-emerald-400 w-[32%] shadow-[0_0_10px_rgba(52,211,153,0.5)]"></div>
+                  </div>
+               </div>
+
+               <div className="space-y-3">
+                  <div className="flex justify-between items-center text-[10px] md:text-xs font-black uppercase tracking-widest text-blue-400 flex-wrap">
+                     <span className="flex items-center gap-2"><Database className="w-4 h-4" /> Datastore Capacity</span>
+                     <span>64%</span>
+                  </div>
+                  <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                     <div className="h-full bg-blue-400 w-[64%] shadow-[0_0_10px_rgba(96,165,250,0.5)]"></div>
+                  </div>
+               </div>
+
+               <div className="space-y-3">
+                  <div className="flex justify-between items-center text-[10px] md:text-xs font-black uppercase tracking-widest text-amber-400 flex-wrap">
+                     <span className="flex items-center gap-2"><Server className="w-4 h-4" /> Node Availability</span>
+                     <span>99.9%</span>
+                  </div>
+                  <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                     <div className="h-full bg-amber-400 w-[99%] shadow-[0_0_10px_rgba(251,191,36,0.5)]"></div>
+                  </div>
+               </div>
+
+               <div className="pt-6 border-t border-white/10 space-y-3">
+                  <div className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
+                     <div>
+                        <p className="text-xs font-bold text-slate-300">Last System Backup</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mt-1">2 hours ago</p>
+                     </div>
+                     <Button variant="ghost" className="h-8 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg text-xs font-bold">Trigger</Button>
+                  </div>
+               </div>
+            </CardContent>
+         </Card>
+      </div>
+
     </div>
   );
 }
-
-const Button = ({ children, className, ...props }: any) => (
-  <button className={`flex items-center justify-center transition-all ${className}`} {...props}>
-    {children}
-  </button>
-);

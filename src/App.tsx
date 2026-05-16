@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { AppLayout } from "./components/layout/AppLayout";
+import { AdminLayout } from "./components/admin/AdminLayout";
 import { Toaster } from "@/components/ui/sonner";
 
 // Pages
@@ -17,6 +18,7 @@ import AdminDashboardPage from "./pages/AdminDashboard";
 import AdminNewsPage from "./pages/AdminNews";
 import AdminAdsPage from "./pages/AdminAds";
 import AdminSettingsPage from "./pages/AdminSettings";
+import AdminHomepagePage from "./pages/AdminHomepage";
 import PrivacyPage from "./pages/Privacy";
 import TermsPage from "./pages/Terms";
 import AboutPage from "./pages/About";
@@ -47,6 +49,15 @@ function PrivateRoute({ children, role, requireAdminLogin }: { children: React.R
   return <>{children}</>;
 }
 
+// Wrapper for Admin interface to apply AdminLayout
+function AdminInterface() {
+  return (
+    <AdminLayout>
+      <Outlet />
+    </AdminLayout>
+  );
+}
+
 export default function App() {
   return (
     <Router>
@@ -71,10 +82,21 @@ export default function App() {
             
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLoginPage />} />
-            <Route path="/admin" element={<PrivateRoute role="admin" requireAdminLogin><AdminDashboardPage /></PrivateRoute>} />
-            <Route path="/admin/news" element={<PrivateRoute role="admin" requireAdminLogin><AdminNewsPage /></PrivateRoute>} />
-            <Route path="/admin/ads" element={<PrivateRoute role="admin" requireAdminLogin><AdminAdsPage /></PrivateRoute>} />
-            <Route path="/admin/settings" element={<PrivateRoute role="admin" requireAdminLogin><AdminSettingsPage /></PrivateRoute>} />
+            
+            {/* Protected Admin Shell */}
+            <Route element={<PrivateRoute role="admin" requireAdminLogin><AdminInterface /></PrivateRoute>}>
+               <Route path="/admin" element={<AdminDashboardPage />} />
+               <Route path="/admin/users" element={<AdminDashboardPage />} /> {/* Placeholder to users */}
+               <Route path="/admin/ads" element={<AdminAdsPage />} />
+               <Route path="/admin/categories" element={<AdminDashboardPage />} /> {/* Placeholder */}
+               <Route path="/admin/news" element={<AdminNewsPage />} />
+               <Route path="/admin/payments" element={<AdminDashboardPage />} /> {/* Placeholder */}
+               <Route path="/admin/reports" element={<AdminDashboardPage />} /> {/* Placeholder */}
+               <Route path="/admin/homepage" element={<AdminHomepagePage />} />
+               <Route path="/admin/notifications" element={<AdminDashboardPage />} /> {/* Placeholder */}
+               <Route path="/admin/settings" element={<AdminSettingsPage />} />
+            </Route>
+
           </Routes>
         </AppLayout>
         <Toaster position="top-right" />

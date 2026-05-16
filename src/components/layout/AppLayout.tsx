@@ -18,7 +18,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   const isAdmin = profile?.role === "admin";
-  const isNavigable = !["/login", "/signup", "/admin/login"].includes(location.pathname);
+  const isNavigable = !["/login", "/signup", "/admin/login"].includes(location.pathname) && !location.pathname.startsWith("/admin");
 
   if (!isNavigable) return <>{children}</>;
 

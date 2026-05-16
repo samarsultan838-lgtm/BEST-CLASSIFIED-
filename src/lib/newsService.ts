@@ -27,8 +27,12 @@ export interface Article {
   featured: boolean;
   publishedAt: any;
   updatedAt: any;
+  scheduledAt?: any;
   tags: string[];
   slug: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
 }
 
 const NEWS_COLLECTION = "news";

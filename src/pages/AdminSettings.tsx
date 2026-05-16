@@ -1,5 +1,5 @@
 import React from "react";
-import { AdminNav } from "../components/admin/AdminNav";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,7 @@ export default function AdminSettings() {
         </div>
       </div>
 
-      <AdminNav />
+
 
       <form onSubmit={handleSave} className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         
