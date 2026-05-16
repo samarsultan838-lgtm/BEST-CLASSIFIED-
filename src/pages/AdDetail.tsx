@@ -296,23 +296,27 @@ export default function AdDetailPage() {
 
                  <div className="space-y-4">
                     <Button 
-                      className="w-full bg-emerald-950 hover:bg-emerald-900 text-white font-black h-20 text-xl rounded-3xl shadow-2xl transition-all uppercase tracking-tighter"
+                      className="w-full bg-emerald-950 hover:bg-emerald-900 text-white font-black h-16 text-sm rounded-2xl shadow-xl transition-all uppercase tracking-tighter"
                       onClick={() => setShowPhone(!showPhone)}
                     >
-                      <Phone className="mr-4 w-6 h-6 text-emerald-500" /> {showPhone ? ad.userPhone || "+92 300 0000000" : "Show Protocol"}
+                      <Phone className="mr-3 w-5 h-5 text-emerald-500" /> {showPhone ? ad.userPhone || "+92 300 0000000" : "Call Seller"}
                     </Button>
                     
-                    {ad.whatsapp ? (
-                      <a href={`https://wa.me/${ad.whatsapp.replace(/\+/g, '')}`} target="_blank" rel="noreferrer" className="block w-full">
-                        <Button className="w-full bg-green-500 hover:bg-green-600 text-emerald-950 font-black h-20 text-xl rounded-3xl shadow-[0_20px_40px_rgba(16,185,129,0.3)] transition-all hover:scale-[1.02] uppercase tracking-tighter">
-                          <MessageCircle className="mr-4 w-8 h-8" /> WhatsApp Direct
-                        </Button>
-                      </a>
-                    ) : (
-                      <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-emerald-950 font-black h-20 text-xl rounded-3xl shadow-[0_20px_40px_rgba(16,185,129,0.3)] transition-all hover:scale-[1.02] uppercase tracking-tighter">
-                        <MessageCircle className="mr-4 w-8 h-8" /> Direct Chat
+                    <a href={`https://wa.me/${(ad.whatsapp || ad.userPhone || '000').replace(/\+/g, '')}`} target="_blank" rel="noreferrer" className="block w-full">
+                      <Button className="w-full bg-green-500 hover:bg-green-600 text-emerald-950 font-black h-16 text-sm rounded-2xl shadow-xl transition-all hover:scale-[1.02] uppercase tracking-tighter">
+                        <MessageCircle className="mr-3 w-5 h-5" /> WhatsApp Direct
                       </Button>
-                    )}
+                    </a>
+
+                    <a href={`mailto:${ad.userEmail || "seller@example.com"}`} className="block w-full">
+                      <Button className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-black h-16 text-sm rounded-2xl shadow-sm transition-all uppercase tracking-tighter">
+                        <Info className="mr-3 w-5 h-5 text-slate-500" /> Email Seller
+                      </Button>
+                    </a>
+
+                    <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-black h-16 text-sm rounded-2xl shadow-sm transition-all uppercase tracking-tighter">
+                      <MessageCircle className="mr-3 w-5 h-5 text-slate-400" /> Chat with Seller
+                    </Button>
                  </div>
 
                  <div className="text-center">
@@ -395,6 +399,12 @@ export default function AdDetailPage() {
                     <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
                        <span>Year</span>
                        <span className="text-slate-900">{ad.vehicleYear}</span>
+                    </div>
+                  )}
+                  {ad.vehicleVIN && (
+                    <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-xl">
+                       <span>VIN Verification</span>
+                       <span className="text-emerald-600 flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> VERIFIED ({ad.vehicleVIN})</span>
                     </div>
                   )}
                   {ad.registeredIn && (

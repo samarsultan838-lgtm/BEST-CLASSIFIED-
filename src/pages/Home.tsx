@@ -68,7 +68,7 @@ export default function HomePage() {
               <span className="text-emerald-400 text-xs font-black uppercase tracking-widest leading-none">Pakistan's Fastest Marketplace</span>
             </div>
             <h1 className="text-5xl md:text-8xl font-black text-white mb-8 tracking-tighter leading-[0.9]">
-              Buy & Sell Anything, <span className="text-emerald-500">Anywhere.</span>
+              Buy, Sell & Discover <br/><span className="text-emerald-500">Worldwide.</span>
             </h1>
             <p className="text-slate-400 text-lg md:text-2xl max-w-2xl mx-auto mb-14 font-medium leading-relaxed">
               The trusted marketplace for verified sellers and high-quality finds. Join thousands of users in Trazot community today.
@@ -99,6 +99,18 @@ export default function HomePage() {
             <Button size="lg" className="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 px-10 rounded-3xl font-black py-8 text-lg transition-transform hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
               Search Now
             </Button>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mt-6 flex flex-wrap justify-center gap-3"
+          >
+            <span className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1.5">Trending:</span>
+            <span className="text-white text-xs font-bold uppercase tracking-widest bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 cursor-pointer transition-colors">Dubai Real Estate</span>
+            <span className="text-white text-xs font-bold uppercase tracking-widest bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 cursor-pointer transition-colors">Luxury SUVs</span>
+            <span className="text-white text-xs font-bold uppercase tracking-widest bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 cursor-pointer transition-colors">Laptops UK</span>
+            <span className="text-white text-xs font-bold uppercase tracking-widest bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 cursor-pointer transition-colors">Digital Services</span>
           </motion.div>
         </div>
       </section>

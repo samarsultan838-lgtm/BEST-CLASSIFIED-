@@ -22,6 +22,8 @@ import { getAds, getPendingAds, getUsers } from "../lib/firestoreService";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+import { AdminNav } from "../components/admin/AdminNav";
+
 export default function AdminDashboard() {
   const { profile } = useAuth();
   const [stats, setStats] = useState<any[]>([]);
@@ -60,7 +62,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700 lg:px-4">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700 lg:px-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none mb-4 whitespace-nowrap">Command Center</h1>
@@ -76,8 +78,10 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      <AdminNav />
+
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-4">
         {stats.map((stat, i) => (
           <Card key={i} className="border-none shadow-2xl rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-white group hover:scale-[1.02] transition-all cursor-pointer" onClick={() => stat.label.includes('Ads') && window.location.assign('/admin/ads')}>
             <CardContent className="p-6 md:p-8">

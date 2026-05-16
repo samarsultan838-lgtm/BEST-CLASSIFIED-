@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { AdminNav } from "../components/admin/AdminNav";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -124,13 +125,18 @@ export default function AdminAds() {
   });
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
       <div className="flex flex-col md:flex-row justify-between items-center gap-6">
         <div>
           <h1 className="text-4xl font-black uppercase tracking-tighter">Inventory Audit</h1>
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Assets Registered: {ads.length}</p>
         </div>
-        <div className="flex gap-4">
+      </div>
+      
+      <AdminNav />
+
+      <div className="flex justify-between items-center bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
+        <div className="flex gap-2">
            {[ 
              { id: 'all', label: 'All Intel' },
              { id: 'pending', label: 'Verification Pending' },
@@ -140,7 +146,7 @@ export default function AdminAds() {
              <Button
                key={item.id}
                variant={filter === item.id ? "default" : "outline"}
-               className={`rounded-2xl h-12 px-6 font-black uppercase tracking-widest text-[10px] shadow-sm transition-all ${filter === item.id ? 'bg-emerald-500 text-emerald-950 border-none' : 'border-slate-100 bg-white text-slate-400 hover:border-emerald-500 hover:text-emerald-500'}`}
+               className={`rounded-xl h-10 px-4 font-black uppercase tracking-widest text-[9px] shadow-sm transition-all ${filter === item.id ? 'bg-emerald-500 text-emerald-950 border-none' : 'border-slate-100 bg-white text-slate-400 hover:border-emerald-500 hover:text-emerald-500'}`}
                onClick={() => setFilter(item.id)}
              >
                {item.label}

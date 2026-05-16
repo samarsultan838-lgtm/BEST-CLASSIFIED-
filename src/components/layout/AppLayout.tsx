@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Phone, Mail, MessageSquare, PlusCircle, Search, Menu, User, LogOut, LayoutDashboard, Newspaper, ShieldCheck } from "lucide-react";
+import { Phone, Mail, MessageSquare, PlusCircle, Search, Menu, User, LogOut, LayoutDashboard, Newspaper, ShieldCheck, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/src/context/AuthContext";
 import {
@@ -24,8 +24,52 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
+      {/* Top Utility Bar */}
+      <div className="bg-slate-950 text-slate-300 py-1.5 px-4 text-[10px] sm:text-xs font-bold flex justify-between items-center hidden md:flex relative z-[60]">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <span className="text-slate-400">TRAZOT — Global Marketplace for Everything</span>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="relative group cursor-pointer h-full flex items-center">
+              <span className="flex items-center gap-1 hover:text-white transition-colors py-1">
+                🌎 Country <ChevronDown className="w-3 h-3" />
+              </span>
+              <div className="absolute top-full right-0 mt-1 w-48 bg-slate-900 border border-slate-800 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col p-2 max-h-64 overflow-y-auto z-[70]">
+                {['Pakistan', 'China', 'Saudi Arabia', 'Qatar', 'UAE (Dubai)', 'USA', 'New Zealand', 'Canada', 'Europe'].map((country) => (
+                  <span key={country} className="p-2 text-xs text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg">{country}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative group cursor-pointer h-full flex items-center">
+              <span className="flex items-center gap-1 hover:text-white transition-colors py-1">
+                🗣️ Language <ChevronDown className="w-3 h-3" />
+              </span>
+              <div className="absolute top-full right-0 mt-1 w-32 bg-slate-900 border border-slate-800 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col p-2 z-[70]">
+                {['English', 'Arabic', 'French'].map((lang) => (
+                  <span key={lang} className="p-2 text-xs text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg">{lang}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative group cursor-pointer h-full flex items-center">
+              <span className="flex items-center gap-1 hover:text-white transition-colors py-1">
+                💵 Currency <ChevronDown className="w-3 h-3" />
+              </span>
+              <div className="absolute top-full right-0 mt-1 w-32 bg-slate-900 border border-slate-800 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col p-2 z-[70]">
+                {['USD', 'PKR', 'AED', 'SAR', 'QAR', 'GBP', 'EUR', 'JPY'].map((currency) => (
+                  <span key={currency} className="p-2 text-xs text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg">{currency}</span>
+                ))}
+              </div>
+            </div>
+            
+            <a href="mailto:info@trazot.com" className="hover:text-white transition-colors ml-2 py-1">info@trazot.com</a>
+          </div>
+        </div>
+      </div>
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200">
+      <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200 shadow-sm">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-3 group">
@@ -35,17 +79,33 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <span className="text-2xl font-black text-slate-900 tracking-tighter uppercase">TRAZOT</span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-8">
-              <Link to="/search" className="text-sm font-black text-slate-500 hover:text-emerald-600 transition-all uppercase tracking-widest flex items-center gap-2 group">
-                <Search className="w-4 h-4 group-hover:scale-110 transition-transform" /> Browse
+            <nav className="hidden lg:flex items-center gap-8">
+              <div className="relative group cursor-pointer">
+                <span className="text-sm font-black text-slate-700 hover:text-emerald-600 transition-all uppercase tracking-widest flex items-center gap-1">
+                  Categories <Menu className="w-3 h-3" />
+                </span>
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-slate-100 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col p-2">
+                  <Link to="/search?category=property" className="p-3 text-sm font-bold text-slate-600 hover:text-emerald-600 hover:bg-slate-50 rounded-lg">Property</Link>
+                  <Link to="/search?category=vehicles" className="p-3 text-sm font-bold text-slate-600 hover:text-emerald-600 hover:bg-slate-50 rounded-lg">Vehicles</Link>
+                  <Link to="/search?category=electronics" className="p-3 text-sm font-bold text-slate-600 hover:text-emerald-600 hover:bg-slate-50 rounded-lg">Electronics</Link>
+                  <Link to="/search?category=fashion" className="p-3 text-sm font-bold text-slate-600 hover:text-emerald-600 hover:bg-slate-50 rounded-lg">Fashion</Link>
+                  <Link to="/search?category=services" className="p-3 text-sm font-bold text-slate-600 hover:text-emerald-600 hover:bg-slate-50 rounded-lg">Services</Link>
+                </div>
+              </div>
+              <Link to="/search" className="text-sm font-black text-slate-700 hover:text-emerald-600 transition-all uppercase tracking-widest flex items-center gap-2 group">
+                 Browse
               </Link>
-              <Link to="/news" className="text-sm font-black text-slate-500 hover:text-emerald-600 transition-all uppercase tracking-widest flex items-center gap-2 group">
-                <Newspaper className="w-4 h-4 group-hover:scale-110 transition-transform" /> Intelligence
-              </Link>
-              <Link to="/about" className="text-sm font-black text-slate-500 hover:text-emerald-600 transition-all uppercase tracking-widest flex items-center gap-2">
-                History
+              <Link to="/news" className="text-sm font-black text-slate-700 hover:text-emerald-600 transition-all uppercase tracking-widest flex items-center gap-2 group">
+                 Intelligence
               </Link>
             </nav>
+          </div>
+
+          <div className="flex-1 max-w-md mx-8 hidden md:block">
+            <div className="relative flex items-center w-full h-10 rounded-full bg-slate-100 px-4 focus-within:ring-2 ring-emerald-500/50">
+              <Search className="w-4 h-4 text-emerald-500 mr-2" />
+              <input type="text" placeholder="Search globally..." className="flex-1 bg-transparent border-none focus:outline-none text-sm font-medium text-slate-700 w-full" />
+            </div>
           </div>
 
           <div className="flex items-center gap-4">

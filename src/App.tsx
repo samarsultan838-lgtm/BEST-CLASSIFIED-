@@ -16,6 +16,7 @@ import DashboardPage from "./pages/Dashboard";
 import AdminDashboardPage from "./pages/AdminDashboard";
 import AdminNewsPage from "./pages/AdminNews";
 import AdminAdsPage from "./pages/AdminAds";
+import AdminSettingsPage from "./pages/AdminSettings";
 import PrivacyPage from "./pages/Privacy";
 import TermsPage from "./pages/Terms";
 import AboutPage from "./pages/About";
@@ -73,6 +74,7 @@ export default function App() {
             <Route path="/admin" element={<PrivateRoute role="admin" requireAdminLogin><AdminDashboardPage /></PrivateRoute>} />
             <Route path="/admin/news" element={<PrivateRoute role="admin" requireAdminLogin><AdminNewsPage /></PrivateRoute>} />
             <Route path="/admin/ads" element={<PrivateRoute role="admin" requireAdminLogin><AdminAdsPage /></PrivateRoute>} />
+            <Route path="/admin/settings" element={<PrivateRoute role="admin" requireAdminLogin><AdminSettingsPage /></PrivateRoute>} />
           </Routes>
         </AppLayout>
         <Toaster position="top-right" />

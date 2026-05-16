@@ -59,6 +59,7 @@ const adSchema = z.object({
   city: z.string().optional(),
   vehicleMake: z.string().optional(),
   vehicleModel: z.string().optional(),
+  vehicleVIN: z.string().optional(),
   registeredIn: z.string().optional(),
   mileage: z.string().optional(),
   fuelType: z.string().optional(),
@@ -472,6 +473,10 @@ export default function PostAdPage() {
                             <div className="space-y-4">
                               <Label htmlFor="vehicleYear" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Year</Label>
                               <Input {...register("vehicleYear")} id="vehicleYear" type="number" placeholder="YYYY" className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10" />
+                            </div>
+                            <div className="space-y-4">
+                              <Label htmlFor="vehicleVIN" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">VIN / Chassis No (Verification)</Label>
+                              <Input {...register("vehicleVIN")} id="vehicleVIN" placeholder="e.g. 17-digit VIN" className="h-16 md:h-20 rounded-2xl md:rounded-3xl text-lg md:text-xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner px-8 md:px-10 uppercase" />
                             </div>
                             <div className="space-y-4">
                               <Label htmlFor="registeredIn" className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 block text-left ml-2">Registered In</Label>

@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { AdminNav } from "../components/admin/AdminNav";
 
 export default function AdminNews() {
   const { profile } = useAuth();
@@ -177,7 +178,7 @@ export default function AdminNews() {
   }
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
       <div className="flex flex-col md:flex-row justify-between items-center gap-6">
         <div>
           <h1 className="text-4xl font-black uppercase tracking-tighter">Report Depository</h1>
@@ -190,6 +191,8 @@ export default function AdminNews() {
           <Plus className="mr-2 h-6 w-6" /> Initialize New Intel
         </Button>
       </div>
+
+      <AdminNav />
 
       <div className="grid grid-cols-1 gap-6">
         {loading ? (
