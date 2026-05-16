@@ -16,7 +16,7 @@ interface UserProfile {
   uid: string;
   name: string;
   email: string;
-  role: "guest" | "user" | "verified_seller" | "admin" | "editor";
+  role: "guest" | "user" | "verified_seller" | "admin" | "editor" | "buyer" | "seller";
   profileImage?: string;
   phone?: string;
   location?: {
@@ -33,7 +33,7 @@ interface AuthContextType {
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, pass: string) => Promise<void>;
-  signUpWithEmail: (email: string, pass: string, name: string) => Promise<void>;
+  signUpWithEmail: (email: string, pass: string, name: string, role?: 'buyer' | 'seller') => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               uid: firebaseUser.uid,
               name: firebaseUser.displayName || "Unknown User",
               email: firebaseUser.email || "",
-              role: isAdmin ? "admin" : "user",
+              role: isAdmin ? "admin" : "buyer",
               profileImage: firebaseUser.photoURL || "",
               createdAt: new Date().toISOString(),
             };
@@ -122,10 +122,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUpWithEmail = async (email: string, pass: string, name: string) => {
+  const signUpWithEmail = async (email: string, pass: string, name: string, role: 'buyer' | 'seller' = 'buyer') => {
     try {
       const userCredential = await firebaseCreateUserWithEmailAndPassword(auth, email, pass);
       await updateProfile(userCredential.user, { displayName: name });
+      
+      const newProfile: UserProfile = {
+        uid: userCredential.user.uid,
+        name: name,
+        email: email,
+        role: role,
+        profileImage: "",
+        createdAt: new Date().toISOString(),
+      };
+      await setDoc(doc(db, "users", userCredential.user.uid), newProfile);
     } catch (error: any) {
       if (error.code === 'auth/operation-not-allowed') {
         throw new Error(`Email/Password registration is currently disabled for project "${auth.app.options.projectId}". Please enable it in the Firebase Console under Authentication > Sign-in method for this specific project.`);

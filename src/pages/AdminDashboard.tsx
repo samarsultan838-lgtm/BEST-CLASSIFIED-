@@ -7,10 +7,11 @@ import {
   ShoppingBag,
   Zap,
   Star,
-  ChevronRight
+  ChevronRight,
+  Users
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { getAds, getPendingAds, getArticles } from "../lib/firestoreService";
+import { getAds, getPendingAds, getArticles, getUsers } from "../lib/firestoreService";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -20,6 +21,7 @@ export default function AdminDashboard() {
     promotedProjects: 0
   });
   const [articles, setArticles] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -30,6 +32,7 @@ export default function AdminDashboard() {
       const allAds = await getAds({ status: 'approved' });
       const pending = await getPendingAds();
       const allArticles = await getArticles();
+      const allUsers = await getUsers();
       
       const premiumCount = allAds?.filter(a => a.priority === 'premium' || a.priority === 'high').length || 0;
       const featuredCount = allAds?.filter(a => a.featured).length || 0;
@@ -43,6 +46,9 @@ export default function AdminDashboard() {
 
       if (allArticles) {
         setArticles(allArticles.slice(0, 3));
+      }
+      if (allUsers) {
+        setUsers(allUsers.slice(0, 5));
       }
     } catch (error) {
       console.error("Dashboard intel failure:", error);
@@ -137,7 +143,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Intelligence Management */}
-      <div className="bg-white rounded-t-[3rem] px-6 pt-10 pb-12 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-slate-50 relative z-10 w-full overflow-hidden">
+      <div className="bg-white rounded-t-[3rem] px-6 pt-10 pb-12 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-slate-50 relative z-20 w-full overflow-hidden">
           <div className="flex flex-row justify-between items-end mb-8">
             <h3 className="text-[1.65rem] font-black uppercase tracking-tighter text-slate-900 leading-tight w-2/3">Intelligence Management</h3>
             <Link to="/admin/news" className="text-[10px] font-black uppercase tracking-[0.1em] text-[#00D084] hover:text-emerald-500 pb-1 text-right whitespace-nowrap">
@@ -171,6 +177,40 @@ export default function AdminDashboard() {
                   <div className="h-4 bg-slate-200 rounded-md w-3/4 mb-2 animate-pulse"></div>
                   <div className="h-2 bg-slate-200 rounded-md w-1/2 animate-pulse"></div>
                 </div>
+              </div>
+            )}
+          </div>
+      </div>
+
+      {/* Network Members */}
+      <div className="bg-slate-100 min-h-[300px] w-full mt-[-2rem] pt-14 pb-12 px-6 rounded-t-[3rem] text-slate-900 relative z-10 border-t border-white shadow-[0_-10px_40px_rgba(0,0,0,0.02)]">
+          <div className="flex flex-row justify-between items-end mb-8">
+            <h3 className="text-[1.65rem] font-black uppercase tracking-tighter text-slate-900 leading-tight w-2/3">Network Members</h3>
+            <Link to="/admin/users" className="text-[10px] font-black uppercase tracking-[0.1em] text-[#00D084] hover:text-emerald-500 pb-1 text-right whitespace-nowrap">
+              Manage All<br/>Members →
+            </Link>
+          </div>
+
+          <div className="space-y-4">
+            {users.length > 0 ? users.map((user: any, i) => (
+              <div key={i} className="bg-white rounded-3xl p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-all border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+                  <span className="text-emerald-600 font-black uppercase">{user.name ? user.name.substring(0, 2) : 'U'}</span>
+                </div>
+                <div className="flex-1 pr-2">
+                  <h4 className="font-black text-slate-900 text-sm leading-tight mb-0.5">{user.name || 'Anonymous User'}</h4>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.1em] truncate">
+                    {user.email || 'No email provided'}
+                  </p>
+                </div>
+                <div className="bg-[#023B27] px-3 py-1 rounded-full shrink-0">
+                  <span className="text-[#00D084] text-[9px] font-bold uppercase tracking-widest">{user.role || 'User'}</span>
+                </div>
+              </div>
+            )) : (
+              // Empty State
+              <div className="p-8 text-center bg-white rounded-3xl border border-slate-100">
+                <p className="text-sm font-bold text-slate-400">No users found</p>
               </div>
             )}
           </div>

@@ -15,6 +15,7 @@ export default function SignupPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [name, setName] = React.useState("");
+  const [role, setRole] = React.useState<'buyer' | 'seller'>('buyer');
   const [loading, setLoading] = React.useState(false);
 
   const handleGoogleLogin = async () => {
@@ -37,7 +38,7 @@ export default function SignupPage() {
 
     setLoading(true);
     try {
-      await signUpWithEmail(email, password, name);
+      await signUpWithEmail(email, password, name, role);
       toast.success("Identity created. Welcome to the network!");
       navigate("/dashboard");
     } catch (error: any) {
@@ -62,8 +63,8 @@ export default function SignupPage() {
       >
         <Card className="shadow-[0_80px_160px_rgba(0,0,0,0.1)] border-none rounded-[3.5rem] overflow-hidden bg-white">
           <CardHeader className="space-y-4 md:space-y-6 text-center p-8 sm:p-12 md:p-16 pb-6 md:pb-12">
-            <div className="mx-auto bg-emerald-500 p-4 rounded-3xl w-max shadow-2xl shadow-emerald-500/30 rotate-6">
-              <ShieldCheck className="w-8 h-8 md:w-10 md:h-10 text-emerald-950" />
+            <div className="mx-auto bg-emerald-500 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-500/30">
+              <ShieldCheck className="w-8 h-8 text-emerald-950" />
             </div>
             <div>
               <CardTitle className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase leading-none mb-3">Merchant Enrollment</CardTitle>
@@ -75,7 +76,7 @@ export default function SignupPage() {
           <CardContent className="space-y-8 md:space-y-10 px-6 sm:px-12 md:px-16 pb-8 md:pb-16">
             <form onSubmit={handleEmailSignup} className="space-y-8">
               <div className="space-y-4">
-                <Label htmlFor="fullname" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Full Designation</Label>
+                <Label htmlFor="fullname" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Full Designation</Label>
                 <div className="relative">
                   <User className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
                   <Input 
@@ -83,12 +84,12 @@ export default function SignupPage() {
                     placeholder="John Doe" 
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" 
+                    className="pl-14 h-16 rounded-full border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" 
                   />
                 </div>
               </div>
               <div className="space-y-4">
-                <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Merchant Email</Label>
+                <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Merchant Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
                   <Input 
@@ -97,12 +98,12 @@ export default function SignupPage() {
                     placeholder="name@domain.com" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" 
+                    className="pl-14 h-16 rounded-full border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" 
                   />
                 </div>
               </div>
               <div className="space-y-4">
-                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Master Passkey</Label>
+                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Master Passkey</Label>
                 <div className="relative">
                   <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
                   <Input 
@@ -111,14 +112,38 @@ export default function SignupPage() {
                     placeholder="Minimum 8 characters" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-14 h-16 rounded-2xl border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" 
+                    className="pl-14 h-16 rounded-full border-slate-100 bg-slate-50 font-black focus:ring-emerald-500 shadow-inner" 
                   />
                 </div>
               </div>
+
+              <div className="space-y-4">
+                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Account Type</Label>
+                <div className="flex bg-slate-50 rounded-full h-16 p-2 border border-slate-100 shadow-inner relative">
+                    <div 
+                      className={`absolute top-2 bottom-2 w-[calc(50%-0.5rem)] rounded-full bg-white shadow-md transition-all duration-300 ease-out z-0 ${role === 'buyer' ? 'left-2' : 'left-[50%]'}`} 
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => setRole('buyer')}
+                      className={`flex-1 relative z-10 font-black text-sm uppercase tracking-wider transition-colors ${role === 'buyer' ? 'text-emerald-700' : 'text-slate-400'}`}
+                    >
+                      Buyer
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={() => setRole('seller')}
+                      className={`flex-1 relative z-10 font-black text-sm uppercase tracking-wider transition-colors ${role === 'seller' ? 'text-emerald-700' : 'text-slate-400'}`}
+                    >
+                      Seller
+                    </button>
+                </div>
+              </div>
+
               <Button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-950 hover:bg-emerald-900 text-white font-black h-20 rounded-3xl transition-all hover:scale-[1.02] active:scale-[0.98] uppercase tracking-tighter text-lg shadow-2xl disabled:opacity-50"
+                className="w-full bg-[#032f20] hover:bg-[#021f15] text-white font-black h-16 md:h-20 rounded-full transition-all hover:scale-[1.02] active:scale-[0.98] uppercase tracking-tighter text-lg shadow-2xl disabled:opacity-50"
               >
                 {loading ? <Loader2 className="animate-spin w-6 h-6" /> : <><UserPlus className="mr-3 w-6 h-6" /> Create Identity</>}
               </Button>
@@ -126,14 +151,14 @@ export default function SignupPage() {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-slate-50" />
+                <span className="w-full border-t border-slate-100" />
               </div>
               <div className="relative flex justify-center text-[10px] uppercase tracking-[0.3em]">
                 <span className="bg-white px-6 text-slate-200 font-black">Fast Entry</span>
               </div>
             </div>
 
-            <Button onClick={handleGoogleLogin} variant="outline" className="w-full h-16 rounded-2xl font-black border-slate-100 hover:bg-slate-50 uppercase tracking-tighter transition-all group">
+            <Button onClick={handleGoogleLogin} variant="outline" className="w-full h-16 rounded-full font-black text-slate-900 border-slate-100 hover:bg-slate-50 uppercase tracking-tighter transition-all group">
                 <svg className="mr-3 h-5 w-5 grayscale group-hover:grayscale-0 transition-all" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                   <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
