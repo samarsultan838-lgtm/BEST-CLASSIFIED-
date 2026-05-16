@@ -20,6 +20,11 @@ export default function SearchPage() {
   const category = searchParams.get("category");
   const queryParam = searchParams.get("q");
   const featuredOnly = searchParams.get("featured") === "true";
+  const minPrice = searchParams.get("minPrice") ? Number(searchParams.get("minPrice")) : undefined;
+  const maxPrice = searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : undefined;
+
+  const [minPriceInput, setMinPriceInput] = useState(searchParams.get("minPrice") || "");
+  const [maxPriceInput, setMaxPriceInput] = useState(searchParams.get("maxPrice") || "");
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -28,13 +33,26 @@ export default function SearchPage() {
         status: "approved", 
         category: category && category !== 'all' ? category : undefined,
         prioritized: true,
-        featured: featuredOnly ? true : undefined
+        featured: featuredOnly ? true : undefined,
+        minPrice,
+        maxPrice
       });
       setAds(results || []);
       setLoading(false);
     };
     fetchAds();
-  }, [category, queryParam, featuredOnly]);
+  }, [category, queryParam, featuredOnly, minPrice, maxPrice]);
+
+  const applyPriceFilter = () => {
+    const newParams = new URLSearchParams(searchParams);
+    if (minPriceInput) newParams.set("minPrice", minPriceInput);
+    else newParams.delete("minPrice");
+    
+    if (maxPriceInput) newParams.set("maxPrice", maxPriceInput);
+    else newParams.delete("maxPrice");
+    
+    setSearchParams(newParams);
+  };
 
   return (
     <div className="bg-slate-50 min-h-screen font-sans">
@@ -95,6 +113,27 @@ export default function SearchPage() {
                
                <div className="space-y-10">
                  <div>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 block">Categories</label>
+                    <Select value={category || "all"} onValueChange={(v) => {
+                         const newParams = new URLSearchParams(searchParams);
+                         if (v === 'all') newParams.delete("category");
+                         else newParams.set("category", v);
+                         setSearchParams(newParams);
+                    }}>
+                      <SelectTrigger className="h-12 w-full rounded-2xl border-slate-100 bg-slate-50 font-bold focus:ring-emerald-500 mb-8">
+                          <SelectValue placeholder="Categories" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl border-slate-200 bg-white text-slate-800 shadow-xl p-2">
+                          <SelectItem value="all">All Items</SelectItem>
+                          <SelectItem value="vehicles">Vehicles</SelectItem>
+                          <SelectItem value="property">Property</SelectItem>
+                          <SelectItem value="mobiles">Mobiles</SelectItem>
+                          <SelectItem value="electronics">Electronics</SelectItem>
+                      </SelectContent>
+                    </Select>
+                 </div>
+
+                 <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 block">Elite Discovery</label>
                     <div className="space-y-3">
                       <label className="flex items-center gap-4 cursor-pointer group">
@@ -122,12 +161,27 @@ export default function SearchPage() {
                     <div className="grid grid-cols-1 gap-4">
                       <div className="relative">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500 font-black">$</span>
-                        <Input placeholder="Min Price" className="h-12 pl-10 rounded-2xl border-slate-100 bg-slate-50 font-bold focus:ring-emerald-500" />
+                        <Input 
+                           placeholder="Min Price" 
+                           value={minPriceInput}
+                           onChange={(e) => setMinPriceInput(e.target.value)}
+                           onBlur={applyPriceFilter}
+                           onKeyDown={(e) => e.key === 'Enter' && applyPriceFilter()}
+                           className="h-12 pl-10 rounded-2xl border-slate-100 bg-slate-50 font-bold focus:ring-emerald-500" 
+                        />
                       </div>
                       <div className="relative">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500 font-black">$</span>
-                        <Input placeholder="Max Price" className="h-12 pl-10 rounded-2xl border-slate-100 bg-slate-50 font-bold focus:ring-emerald-500" />
+                        <Input 
+                           placeholder="Max Price" 
+                           value={maxPriceInput}
+                           onChange={(e) => setMaxPriceInput(e.target.value)}
+                           onBlur={applyPriceFilter}
+                           onKeyDown={(e) => e.key === 'Enter' && applyPriceFilter()}
+                           className="h-12 pl-10 rounded-2xl border-slate-100 bg-slate-50 font-bold focus:ring-emerald-500" 
+                        />
                       </div>
+                      <Button onClick={applyPriceFilter} variant="outline" className="w-full text-emerald-600 border-emerald-100 hover:bg-emerald-50 rounded-xl font-bold mt-2">Apply Price</Button>
                     </div>
                  </div>
 
@@ -145,7 +199,17 @@ export default function SearchPage() {
                     </div>
                  </div>
 
-                 <Button variant="outline" className="w-full h-14 rounded-2xl border-slate-100 text-slate-400 font-black uppercase tracking-widest hover:border-emerald-500 hover:text-emerald-600 transition-all">Reset All</Button>
+                 <Button 
+                    onClick={() => {
+                        setSearchParams({});
+                        setMinPriceInput("");
+                        setMaxPriceInput("");
+                    }} 
+                    variant="outline" 
+                    className="w-full h-14 rounded-2xl border-slate-100 text-slate-400 font-black uppercase tracking-widest hover:border-emerald-500 hover:text-emerald-600 transition-all"
+                 >
+                    Reset All
+                 </Button>
                </div>
              </div>
           </aside>

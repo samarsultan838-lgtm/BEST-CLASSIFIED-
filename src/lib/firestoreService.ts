@@ -72,7 +72,7 @@ export const createAd = async (adData: any) => {
   }
 };
 
-export const getAds = async (filters: { category?: string; status?: string; limitCount?: number; prioritized?: boolean; featured?: boolean } = {}) => {
+export const getAds = async (filters: { category?: string; status?: string; limitCount?: number; prioritized?: boolean; featured?: boolean; minPrice?: number; maxPrice?: number } = {}) => {
   const path = "ads";
   try {
     let q;
@@ -98,7 +98,16 @@ export const getAds = async (filters: { category?: string; status?: string; limi
     }
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
+    let results = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
+    
+    if (filters.minPrice !== undefined) {
+      results = results.filter(ad => Number(ad.price) >= filters.minPrice!);
+    }
+    if (filters.maxPrice !== undefined) {
+      results = results.filter(ad => Number(ad.price) <= filters.maxPrice!);
+    }
+    
+    return results;
   } catch (error) {
     handleFirestoreError(error, OperationType.LIST, path);
   }
