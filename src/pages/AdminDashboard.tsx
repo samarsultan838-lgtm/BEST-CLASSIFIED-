@@ -99,26 +99,26 @@ export default function AdminDashboard() {
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-2 inline-block"></span>
             System Online
           </Badge>
-          <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs h-10 px-4">
-             <Link to="/admin/settings"><Settings className="w-4 h-4 mr-2" /> Settings</Link>
-          </Button>
+          <Link to="/admin/settings" className="inline-flex items-center justify-center bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs h-10 px-4">
+             <Settings className="w-4 h-4 mr-2" /> Settings
+          </Link>
         </div>
       </div>
 
       {/* Quick Actions Bar */}
       <div className="flex flex-nowrap overflow-x-auto pb-4 gap-4 hide-scrollbar">
-         <Button asChild variant="outline" className="h-14 rounded-2xl border-slate-200 bg-white hover:border-emerald-500 hover:bg-emerald-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
-            <Link to="/admin/ads"><Plus className="w-4 h-4 mr-2 text-emerald-500" /> New Ad Campaign</Link>
-         </Button>
-         <Button asChild variant="outline" className="h-14 rounded-2xl border-slate-200 bg-white hover:border-blue-500 hover:bg-blue-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
-            <Link to="/admin/news"><FileText className="w-4 h-4 mr-2 text-blue-500" /> Publish Article</Link>
-         </Button>
-         <Button asChild variant="outline" className="h-14 rounded-2xl border-slate-200 bg-white hover:border-purple-500 hover:bg-purple-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
-            <Link to="/admin/homepage"><Star className="w-4 h-4 mr-2 text-purple-500" /> Modify Homepage</Link>
-         </Button>
-         <Button asChild variant="outline" className="h-14 rounded-2xl border-slate-200 bg-white hover:border-orange-500 hover:bg-orange-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
-            <Link to="/admin/reports"><ShieldAlert className="w-4 h-4 mr-2 text-orange-500" /> Review Reports</Link>
-         </Button>
+         <Link to="/admin/ads" className="inline-flex items-center justify-center h-14 rounded-2xl border border-slate-200 bg-white hover:border-emerald-500 hover:bg-emerald-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
+            <Plus className="w-4 h-4 mr-2 text-emerald-500" /> New Ad Campaign
+         </Link>
+         <Link to="/admin/news" className="inline-flex items-center justify-center h-14 rounded-2xl border border-slate-200 bg-white hover:border-blue-500 hover:bg-blue-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
+            <FileText className="w-4 h-4 mr-2 text-blue-500" /> Publish Article
+         </Link>
+         <Link to="/admin/homepage" className="inline-flex items-center justify-center h-14 rounded-2xl border border-slate-200 bg-white hover:border-purple-500 hover:bg-purple-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
+            <Star className="w-4 h-4 mr-2 text-purple-500" /> Modify Homepage
+         </Link>
+         <Link to="/admin/reports" className="inline-flex items-center justify-center h-14 rounded-2xl border border-slate-200 bg-white hover:border-orange-500 hover:bg-orange-50 text-slate-700 font-bold min-w-[200px] flex-shrink-0">
+            <ShieldAlert className="w-4 h-4 mr-2 text-orange-500" /> Review Reports
+         </Link>
       </div>
 
       {/* Key Metrics Grid */}
@@ -211,9 +211,9 @@ export default function AdminDashboard() {
                </CardTitle>
                <CardDescription className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Assets requiring manual review</CardDescription>
             </div>
-            <Button asChild variant="ghost" className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 font-bold text-xs uppercase tracking-widest h-10 px-4 rounded-xl">
-               <Link to="/admin/ads?filter=pending">Review All</Link>
-            </Button>
+            <Link to="/admin/ads?filter=pending" className="inline-flex items-center justify-center text-orange-600 hover:text-orange-700 hover:bg-orange-50 font-bold text-xs uppercase tracking-widest h-10 px-4 rounded-xl">
+               Review All
+            </Link>
           </CardHeader>
           <CardContent className="p-0">
              <ScrollArea className="h-[380px]">
@@ -238,9 +238,9 @@ export default function AdminDashboard() {
                             </div>
                          </div>
                          <div className="flex items-center gap-2 w-full sm:w-auto mt-4 sm:mt-0">
-                            <Button asChild variant="outline" className="flex-1 sm:flex-none border-emerald-200 text-emerald-700 hover:bg-emerald-50 h-10 rounded-xl font-bold text-[10px] uppercase tracking-widest">
-                               <Link to={`/admin/ads`}>Process</Link>
-                            </Button>
+                            <Link to={`/admin/ads`} className="inline-flex items-center justify-center flex-1 sm:flex-none border border-emerald-200 text-emerald-700 hover:bg-emerald-50 h-10 rounded-xl font-bold text-[10px] uppercase tracking-widest px-4">
+                               Process
+                            </Link>
                          </div>
                       </div>
                     ))
