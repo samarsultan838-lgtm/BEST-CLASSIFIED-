@@ -30,7 +30,7 @@ function PrivateRoute({ children, role }: { children: React.ReactNode, role?: st
     return <Navigate to="/login" />;
   }
   
-  if (role && profile.role !== role && profile.role !== 'admin') {
+  if (role && profile.role !== role) {
     return <Navigate to="/" />;
   }
   
