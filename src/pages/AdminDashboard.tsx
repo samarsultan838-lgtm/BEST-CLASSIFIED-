@@ -22,6 +22,7 @@ export default function AdminDashboard() {
   });
   const [articles, setArticles] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [pendingAds, setPendingAds] = useState<any[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -44,6 +45,9 @@ export default function AdminDashboard() {
         promotedProjects: featuredCount
       });
 
+      if (pending) {
+        setPendingAds(pending.slice(0, 3));
+      }
       if (allArticles) {
         setArticles(allArticles.slice(0, 3));
       }
@@ -94,7 +98,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* VERIFICATION QUEUE */}
-        <div className="bg-white rounded-[2rem] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-50 relative overflow-hidden">
+        <Link to="/admin/ads" className="block bg-white rounded-[2rem] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-50 relative overflow-hidden transition-all hover:scale-[1.02] active:scale-95">
           <div className="flex justify-between items-start mb-12">
             <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center">
               <ShieldCheck className="w-5 h-5 text-orange-500" />
@@ -107,7 +111,7 @@ export default function AdminDashboard() {
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Verification Queue</p>
             <h2 className="text-4xl font-black text-slate-900 tracking-tighter">{stats.verificationQueue}</h2>
           </div>
-        </div>
+        </Link>
 
         {/* PREMIUM PROTOCOLS */}
         <div className="bg-white rounded-[2rem] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-50 relative overflow-hidden">
@@ -142,8 +146,44 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* Pending Approvals */}
+      <div className="bg-slate-100 rounded-t-[3rem] px-6 pt-10 pb-12 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-slate-50 relative z-30 w-full overflow-hidden mt-[-2rem]">
+          <div className="flex flex-row justify-between items-end mb-8">
+            <h3 className="text-[1.65rem] font-black uppercase tracking-tighter text-slate-900 leading-tight w-2/3">Verification Queue</h3>
+            <Link to="/admin/ads" className="text-[10px] font-black uppercase tracking-[0.1em] text-[#00D084] hover:text-emerald-500 pb-1 text-right whitespace-nowrap">
+              Review All<br/>Assets →
+            </Link>
+          </div>
+          
+          <div className="space-y-4">
+            {pendingAds.length > 0 ? pendingAds.map((ad: any, i) => (
+              <Link to="/admin/ads" key={i} className="bg-white rounded-3xl p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-all border border-slate-100">
+                <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden shrink-0 shadow-inner">
+                  {ad.images && ad.images.length > 0 ? (
+                    <img src={ad.images[0]} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-slate-200"></div>
+                  )}
+                </div>
+                <div className="flex-1 pr-2">
+                  <h4 className="font-black text-slate-900 text-base leading-tight mb-1 truncate">{ad.title}</h4>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.1em] truncate">
+                    {ad.userName || 'Unknown'} • {ad.category}
+                  </p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-300 shrink-0" />
+              </Link>
+            )) : (
+              <div className="bg-white rounded-3xl p-8 text-center border border-slate-100">
+                <ShieldCheck className="w-10 h-10 text-emerald-500 mx-auto mb-3 opacity-20" />
+                <p className="text-sm font-bold text-slate-400">Queue completely clear</p>
+              </div>
+            )}
+          </div>
+      </div>
+
       {/* Intelligence Management */}
-      <div className="bg-white rounded-t-[3rem] px-6 pt-10 pb-12 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-slate-50 relative z-20 w-full overflow-hidden">
+      <div className="bg-white rounded-t-[3rem] px-6 pt-10 pb-12 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] border-t border-slate-50 relative z-20 w-full overflow-hidden mt-[-2rem]">
           <div className="flex flex-row justify-between items-end mb-8">
             <h3 className="text-[1.65rem] font-black uppercase tracking-tighter text-slate-900 leading-tight w-2/3">Intelligence Management</h3>
             <Link to="/admin/news" className="text-[10px] font-black uppercase tracking-[0.1em] text-[#00D084] hover:text-emerald-500 pb-1 text-right whitespace-nowrap">
