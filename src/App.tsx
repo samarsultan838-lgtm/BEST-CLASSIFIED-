@@ -16,6 +16,8 @@ import PrivacyPage from "./pages/Privacy";
 import TermsPage from "./pages/Terms";
 import AboutPage from "./pages/About";
 import ContactPage from "./pages/ContactPage";
+import AdminLoginPage from "./pages/AdminLogin";
+import AdminDashboardPage from "./pages/admin/AdminDashboard";
 
 function PrivateRoute({ children, role }: { children: React.ReactNode, role?: string }) {
   const { profile, loading } = useAuth();
@@ -57,6 +59,10 @@ export default function App() {
             
             {/* User Routes */}
             <Route path="/post-ad" element={<PrivateRoute><PostAdPage /></PrivateRoute>} />
+
+            {/* Admin Interface */}
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin/*" element={<PrivateRoute role="admin"><AdminDashboardPage /></PrivateRoute>} />
 
           </Routes>
         </AppLayout>

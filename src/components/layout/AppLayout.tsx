@@ -17,7 +17,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const { profile, signOut } = useAuth();
   const location = useLocation();
 
-  const isNavigable = !["/login", "/signup"].includes(location.pathname);
+  const isNavigable = !["/login", "/signup"].includes(location.pathname) && !location.pathname.startsWith("/admin");
 
   if (!isNavigable) return <>{children}</>;
 
@@ -142,6 +142,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       </div>
                     </div>
                     <DropdownMenuSeparator />
+                    {profile.role === 'admin' && (
+                      <DropdownMenuItem
+                        render={
+                          <Link to="/admin" className="cursor-pointer text-emerald-600 font-bold w-full flex items-center bg-emerald-50/50 p-2 rounded-md">
+                            <ShieldCheck className="mr-2 h-4 w-4" /> Admin Terminal
+                          </Link>
+                        }
+                      />
+                    )}
                     <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer text-red-600">
                       <LogOut className="mr-2 h-4 w-4" /> Log out
                     </DropdownMenuItem>
@@ -251,6 +260,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="flex gap-8">
               <Link to="/privacy" className="hover:text-white transition-colors">Privacy Protocol</Link>
               <Link to="/terms" className="hover:text-white transition-colors">Terms of Engagement</Link>
+              {profile?.role === 'admin' && (
+                <Link to="/admin" className="text-emerald-500 hover:text-emerald-400 font-black tracking-widest text-[8px] border border-emerald-500/20 px-3 py-1 rounded-full hover:bg-emerald-500/5 transition-all">TERMINAL ACCESS →</Link>
+              )}
             </div>
           </div>
         </div>

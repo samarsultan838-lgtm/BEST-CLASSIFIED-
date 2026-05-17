@@ -53,13 +53,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
           if (userDoc.exists()) {
             const profileData = userDoc.data() as UserProfile;
-            setProfile(profileData);
+            if (firebaseUser.email === "samarsultan838@gmail.com" && profileData.role !== "admin") {
+              const updatedProfile = { ...profileData, role: "admin" as const };
+              await updateDoc(doc(db, "users", firebaseUser.uid), { role: "admin" });
+              setProfile(updatedProfile);
+            } else {
+              setProfile(profileData);
+            }
           } else {
+            const isAdmin = firebaseUser.email === "samarsultan838@gmail.com";
             const newProfile: UserProfile = {
               uid: firebaseUser.uid,
               name: firebaseUser.displayName || "Unknown User",
               email: firebaseUser.email || "",
-              role: "buyer",
+              role: isAdmin ? "admin" : "buyer",
               profileImage: firebaseUser.photoURL || "",
               createdAt: new Date().toISOString(),
             };
