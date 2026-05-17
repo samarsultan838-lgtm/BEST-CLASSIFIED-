@@ -21,13 +21,13 @@ import {
   Award,
   ArrowRight
 } from "lucide-react";
-import { getAdById } from "@/src/lib/firestoreService";
+import { getAdById } from "@/lib/firestoreService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import SEO from "@/src/components/SEO";
+import SEO from "@/components/SEO";
 
 const Separator = ({ className }: { className?: string }) => <div className={`h-px bg-slate-100 ${className || ""}`} />;
 

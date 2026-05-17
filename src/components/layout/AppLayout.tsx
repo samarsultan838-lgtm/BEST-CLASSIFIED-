@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Phone, Mail, MessageSquare, PlusCircle, Search, Menu, User, LogOut, LayoutDashboard, Newspaper, ShieldCheck, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/src/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import {
   DropdownMenu,
   DropdownMenuContent,

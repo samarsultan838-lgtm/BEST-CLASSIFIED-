@@ -40,8 +40,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useAuth } from "@/src/context/AuthContext";
-import { createAd } from "@/src/lib/firestoreService";
+import { useAuth } from "@/context/AuthContext";
+import { createAd } from "@/lib/firestoreService";
 import { toast } from "sonner";
 const adSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),

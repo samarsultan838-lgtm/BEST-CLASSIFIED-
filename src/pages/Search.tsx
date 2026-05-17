@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Search as SearchIcon, MapPin, Grid, List as ListIcon, Filter, SlidersHorizontal, ChevronDown, Tag, ArrowRight, Zap } from "lucide-react";
-import { getAds } from "@/src/lib/firestoreService";
+import { getAds } from "@/lib/firestoreService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import SEO from "@/src/components/SEO";
+import SEO from "@/components/SEO";
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();

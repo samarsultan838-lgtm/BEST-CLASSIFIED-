@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { getAds } from "../lib/firestoreService";
-import SEO from "@/src/components/SEO";
+import SEO from "@/components/SEO";
 
 const CATEGORIES = [
   { name: "Vehicles", icon: Car, color: "bg-blue-500", slug: "vehicles" },
