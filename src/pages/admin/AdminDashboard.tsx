@@ -604,8 +604,92 @@ export default function AdminDashboard() {
                   </div>
                )}
 
+               {/* CATEGORIES TAB */}
+               {activeTab === "categories" && (
+                  <div className="space-y-6 animate-in fade-in">
+                     <div className="flex items-center justify-between mb-6">
+                        <div>
+                           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Platform Categories</h2>
+                           <p className="text-sm text-slate-500">Manage categories, subcategories, and category icons</p>
+                        </div>
+                        <Button className="bg-slate-900 hover:bg-slate-800 text-white font-bold h-10 px-6 rounded-xl text-sm">
+                           + New Category
+                        </Button>
+                     </div>
+
+                     <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                        <table className="w-full text-left border-collapse">
+                           <thead>
+                              <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-semibold">
+                                 <th className="p-4 px-6">Category Details</th>
+                                 <th className="p-4">Subcategories</th>
+                                 <th className="p-4">Active Listings</th>
+                                 <th className="p-4 text-right">Actions</th>
+                              </tr>
+                           </thead>
+                           <tbody className="divide-y divide-slate-100">
+                              <tr className="hover:bg-slate-50">
+                                 <td className="p-4 px-6 flex items-center gap-4">
+                                     <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center font-bold">A</div>
+                                     <div>
+                                         <p className="font-bold text-slate-900">Electronics & Appliances</p>
+                                         <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mt-0.5">electronics</p>
+                                     </div>
+                                 </td>
+                                 <td className="p-4 text-sm font-semibold text-slate-600">
+                                     Mobile Phones, Laptops, Cameras
+                                 </td>
+                                 <td className="p-4">
+                                     <Badge variant="outline" className="font-bold text-emerald-600 bg-emerald-50 border-emerald-100">1,240 Ads</Badge>
+                                 </td>
+                                 <td className="p-4 text-right">
+                                     <Button size="sm" variant="outline" className="h-8 font-bold text-xs bg-white text-slate-600">Edit</Button>
+                                 </td>
+                              </tr>
+                              <tr className="hover:bg-slate-50">
+                                 <td className="p-4 px-6 flex items-center gap-4">
+                                     <div className="w-10 h-10 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center font-bold">V</div>
+                                     <div>
+                                         <p className="font-bold text-slate-900">Vehicles & Transport</p>
+                                         <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mt-0.5">vehicles</p>
+                                     </div>
+                                 </td>
+                                 <td className="p-4 text-sm font-semibold text-slate-600">
+                                     Cars, Motorcycles, Bicycles
+                                 </td>
+                                 <td className="p-4">
+                                     <Badge variant="outline" className="font-bold text-emerald-600 bg-emerald-50 border-emerald-100">856 Ads</Badge>
+                                 </td>
+                                 <td className="p-4 text-right">
+                                     <Button size="sm" variant="outline" className="h-8 font-bold text-xs bg-white text-slate-600">Edit</Button>
+                                 </td>
+                              </tr>
+                              <tr className="hover:bg-slate-50">
+                                 <td className="p-4 px-6 flex items-center gap-4">
+                                     <div className="w-10 h-10 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center font-bold">P</div>
+                                     <div>
+                                         <p className="font-bold text-slate-900">Property & Real Estate</p>
+                                         <p className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mt-0.5">property</p>
+                                     </div>
+                                 </td>
+                                 <td className="p-4 text-sm font-semibold text-slate-600">
+                                     Houses, Apartments, Land
+                                 </td>
+                                 <td className="p-4">
+                                     <Badge variant="outline" className="font-bold text-emerald-600 bg-emerald-50 border-emerald-100">412 Ads</Badge>
+                                 </td>
+                                 <td className="p-4 text-right">
+                                     <Button size="sm" variant="outline" className="h-8 font-bold text-xs bg-white text-slate-600">Edit</Button>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+               )}
+
                {/* PLACEHOLDER TABS FOR OTHER FEATURES */}
-               {["categories", "payments", "reports", "notifications", "analytics", "roles", "security", "settings"].includes(activeTab) && (
+               {["payments", "reports", "notifications", "analytics", "roles", "security", "settings"].includes(activeTab) && (
                   <div className="space-y-6 animate-in fade-in">
                      <h2 className="text-2xl font-bold text-slate-900 tracking-tight capitalize">
                         {activeTab.replace('-', ' ')} <Badge className="ml-2 bg-blue-100 text-blue-700 hover:bg-blue-200 border-none">Beta Module</Badge>
