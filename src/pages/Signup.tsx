@@ -22,7 +22,7 @@ export default function SignupPage() {
     try {
       await signInWithGoogle();
       toast.success("Account created successfully!");
-      navigate("/dashboard");
+      navigate("/");
     } catch (error: any) {
       toast.error(error.message || "Failed to sign up with Google");
       console.error(error);
@@ -40,7 +40,7 @@ export default function SignupPage() {
     try {
       await signUpWithEmail(email, password, name, role);
       toast.success("Identity created. Welcome to the network!");
-      navigate("/dashboard");
+      navigate("/");
     } catch (error: any) {
       toast.error(error.message || "Failed to create identity");
       console.error(error);

@@ -206,8 +206,8 @@ export default function PostAdPage() {
             Your item is now in review and will be live shortly.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Button onClick={() => navigate("/dashboard")} className="bg-emerald-950 hover:bg-emerald-900 text-white font-black py-8 rounded-3xl text-lg uppercase tracking-tighter shadow-2xl">
-              Go to Dashboard
+            <Button onClick={() => window.location.reload()} className="bg-emerald-950 hover:bg-emerald-900 text-white font-black py-8 rounded-3xl text-lg uppercase tracking-tighter shadow-2xl">
+              Post Another Ad
             </Button>
             <Button variant="outline" onClick={() => navigate("/")} className="border-slate-100 font-black py-8 rounded-3xl text-lg uppercase tracking-tighter hover:bg-slate-50">
               Back to Home

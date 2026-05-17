@@ -20,7 +20,7 @@ export default function LoginPage() {
     try {
       await signInWithGoogle();
       toast.success("Welcome to Trazot!");
-      navigate("/dashboard");
+      navigate("/");
     } catch (error: any) {
       toast.error(error.message || "Failed to login with Google");
       console.error(error);
@@ -38,7 +38,7 @@ export default function LoginPage() {
     try {
       await signInWithEmail(email, password);
       toast.success("Welcome back, Merchant!");
-      navigate("/dashboard");
+      navigate("/");
     } catch (error: any) {
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
          toast.error("Invalid email or password. Please check your credentials or sign up if you don't have an account.");

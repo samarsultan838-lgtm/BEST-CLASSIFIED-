@@ -12,16 +12,12 @@ import AdDetailPage from "./pages/AdDetail";
 import PostAdPage from "./pages/PostAd";
 import NewsPage from "./pages/News";
 import ArticlePage from "./pages/Article";
-import DashboardPage from "./pages/Dashboard";
-import AdminDashboardPage from "./pages/AdminDashboard";
 import PrivacyPage from "./pages/Privacy";
 import TermsPage from "./pages/Terms";
 import AboutPage from "./pages/About";
 import ContactPage from "./pages/ContactPage";
 
-import AdminLoginPage from "./pages/AdminLogin";
-
-function PrivateRoute({ children, role, requireAdminLogin }: { children: React.ReactNode, role?: string, requireAdminLogin?: boolean }) {
+function PrivateRoute({ children, role }: { children: React.ReactNode, role?: string }) {
   const { profile, loading } = useAuth();
   
   if (loading) return (
@@ -31,9 +27,6 @@ function PrivateRoute({ children, role, requireAdminLogin }: { children: React.R
   );
   
   if (!profile) {
-    if (requireAdminLogin) {
-      return <Navigate to="/admin/login" />;
-    }
     return <Navigate to="/login" />;
   }
   
@@ -64,14 +57,6 @@ export default function App() {
             
             {/* User Routes */}
             <Route path="/post-ad" element={<PrivateRoute><PostAdPage /></PrivateRoute>} />
-            <Route path="/dashboard/*" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin/login" element={<AdminLoginPage />} />
-            
-            {/* Protected Admin Shell */}
-            <Route path="/admin" element={<PrivateRoute role="admin" requireAdminLogin><AdminDashboardPage /></PrivateRoute>} />
-
 
           </Routes>
         </AppLayout>
