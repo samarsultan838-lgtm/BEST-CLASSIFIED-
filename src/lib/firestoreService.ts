@@ -154,6 +154,15 @@ export const getAdById = async (id: string) => {
 };
 
 // NEWS
+export const deleteArticle = async (articleId: string) => {
+  const path = `articles/${articleId}`;
+  try {
+    await deleteDoc(doc(db, "articles", articleId));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, path);
+  }
+};
+
 export const getArticles = async (limitCount?: number) => {
   const path = "articles";
   try {
@@ -198,6 +207,45 @@ export const getUsers = async () => {
 };
 
 // ADMIN
+export const createArticle = async (articleData: any) => {
+  const path = "articles";
+  try {
+    const docRef = await addDoc(collection(db, path), {
+      ...articleData,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return docRef.id;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.CREATE, path);
+  }
+};
+
+export const updateUserStatus = async (userId: string, isBlocked: boolean) => {
+  const path = `users/${userId}`;
+  try {
+    const docRef = doc(db, "users", userId);
+    await updateDoc(docRef, {
+      isBlocked,
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.UPDATE, path);
+  }
+};
+
+export const updateAd = async (adId: string, updates: any) => {
+  const path = `ads/${adId}`;
+  try {
+    const docRef = doc(db, "ads", adId);
+    await updateDoc(docRef, {
+      ...updates,
+      updatedAt: serverTimestamp()
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.UPDATE, path);
+  }
+};
 export const getPendingAds = async () => {
   const path = "ads";
   try {
