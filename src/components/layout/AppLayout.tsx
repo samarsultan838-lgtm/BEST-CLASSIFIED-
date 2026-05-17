@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Phone, Mail, MessageSquare, PlusCircle, Search, Menu, User, LogOut, LayoutDashboard, Newspaper, ShieldCheck, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
@@ -16,6 +16,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { profile, signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isNavigable = !["/login", "/signup"].includes(location.pathname) && !location.pathname.startsWith("/admin");
 
@@ -142,6 +143,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       </div>
                     </div>
                     <DropdownMenuSeparator />
+                    {profile.role === 'admin' && (
+                        <DropdownMenuItem className="cursor-pointer font-bold text-emerald-600" onClick={() => navigate('/admin')}>
+                          <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Terminal
+                        </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer text-red-600">
                       <LogOut className="mr-2 h-4 w-4" /> Log out
                     </DropdownMenuItem>
